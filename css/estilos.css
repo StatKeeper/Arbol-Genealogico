@@ -1,0 +1,143 @@
+:root {
+    --bg-canvas: #fcfbfa;
+    --dot-color: #e5e3de;
+    --card-bg: #ffffff;
+    --text-main: #2c2c2c;
+    --text-muted: #666666;
+    --border-card: #e0deda;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+    background-color: var(--bg-canvas);
+    color: var(--text-main);
+    overflow: hidden;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.app-header {
+    height: 60px;
+    background: #ffffff;
+    border-bottom: 1px solid var(--border-card);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    z-index: 10;
+}
+
+.app-header h1 {
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+#canvas-arbol {
+    flex: 1;
+    position: relative;
+    overflow: auto;
+    background-image: radial-gradient(var(--dot-color) 1.5px, transparent 1.5px);
+    background-size: 24px 24px;
+    padding: 40px;
+}
+
+#arbol-net {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+}
+
+/* Estilo de las Tarjetas */
+.tarjeta-familiar {
+    background: var(--card-bg);
+    border: 2px solid var(--border-card);
+    border-radius: 12px;
+    width: 260px;
+    padding: 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+/* Colores de Rama para Mujeres */
+.rama-azul { border-color: #2563eb; background-color: #eff6ff; }
+.rama-amarillo { border-color: #d97706; background-color: #fffbeb; }
+.rama-rojo { border-color: #dc2626; background-color: #fef2f2; }
+.rama-verde { border-color: #16a34a; background-color: #f0fdf4; }
+
+/* Efecto 50% / 50% para mujeres de doble rama */
+.rama-50-50 {
+    border-image: linear-gradient(135deg, var(--color-1, #2563eb), var(--color-2, #dc2626)) 1;
+    background: linear-gradient(135deg, var(--bg-1, #eff6ff), var(--bg-2, #fef2f2));
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: #e5e7eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: #4b5563;
+}
+
+.info-principal h3 { font-size: 0.95rem; font-weight: 600; }
+.info-principal p { font-size: 0.85rem; color: var(--text-muted); }
+
+.tags-gen {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.tag {
+    font-size: 0.75rem;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: #e5e7eb;
+    font-weight: 500;
+}
+
+.tag.m { background: #e0f2fe; color: #0369a1; }
+.tag.f { background: #fce7f3; color: #be185d; }
+
+.edad-aprox {
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin-bottom: 12px;
+}
+
+.seccion-parejas, .seccion-hijos {
+    border-top: 1px solid rgba(0,0,0,0.08);
+    padding-top: 8px;
+    margin-top: 8px;
+    font-size: 0.8rem;
+}
+
+.seccion-parejas h4, .seccion-hijos h4 {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+}
+
+.lista-nombres li {
+    list-style: none;
+    padding: 2px 0;
+    color: #1d4ed8;
+}
