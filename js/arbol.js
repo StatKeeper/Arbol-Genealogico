@@ -1,3 +1,5 @@
+let listaPersonas = [];
+
 document.addEventListener("DOMContentLoaded", () => {
     cargarDatos();
 });
@@ -6,29 +8,62 @@ async function cargarDatos() {
     try {
         const respuesta = await fetch('data/familia.json');
         const datos = await respuesta.json();
-        renderizarArbol(datos.personas);
+        listaPersonas = datos.personas || [];
+        renderizarArbol(listaPersonas);
+        actualizarListaAdmin();
     } catch (error) {
         console.error("Error al cargar los datos:", error);
     }
 }
 
-function calcularEdad(anioNacimiento) {
-    return new Date().getFullYear() - anioNacimiento;
+// Control de Pestañas
+function cambiarPestana(pestana) {
+    const btnArbol = document.getElementById("tab-arbol");
+    const btnAdmin = document.getElementById("tab-admin");
+    const vistaArbol = document.getElementById("vista-arbol");
+    const vistaAdmin = document.getElementById("vista-admin");
+
+    if (pestana === 'arbol') {
+        btnArbol.classList.add("active");
+        btnAdmin.classList.remove("active");
+        vistaArbol.classList.remove("vista-oculta");
+        vistaAdmin.classList.add("vista-oculta");
+        renderizarArbol(listaPersonas);
+    } else {
+        btnAdmin.classList.add("active");
+        btnArbol.classList.remove("active");
+        vistaAdmin.classList.remove("vista-oculta");
+        vistaArbol.classList.add("vista-oculta");
+        actualizarListaAdmin();
+    }
 }
 
+function calcularEdad(anioNacimiento) {
+    const anioActual = new Date().getFullYear();
+    return anioActual - anioNacimiento;
+}
+
+// Renderizado del Árbol
 function renderizarArbol(personas) {
     const contenedor = document.getElementById("arbol-net");
     contenedor.innerHTML = "";
 
+    if (personas.length === 0) {
+        contenedor.innerHTML = "<p style='padding: 20px; color: #666;'>No hay registros en el árbol todavía. Usa la pestaña 'Administrar / Agregar' para crear uno.</p>";
+        return;
+    }
+
     personas.forEach(persona => {
         const tarjeta = document.createElement("div");
         
-        let estiloExtra = "";
         let claseRama = `rama-${persona.ramaColor || 'neutro'}`;
-        
+        let estiloExtra = "";
+
         if (persona.ramaColor === '50-50') {
             claseRama = 'rama-50-50';
-            estiloExtra = `style="--color-1: ${persona.color1}; --color-2: ${persona.color2}; --bg-1: ${persona.bg1}; --bg-2: ${persona.bg2};"`;
+            const col1 = obtenerColorHex(persona.color1 || 'azul');
+            const col2 = obtenerColorHex(persona.color2 || 'rojo');
+            estiloExtra = `style="--color-1: ${col1}; --color-2: ${col2}; --bg-1: ${col1}15; --bg-2: ${col2}15;"`;
         }
 
         tarjeta.className = `tarjeta-familiar ${claseRama}`;
@@ -48,21 +83,207 @@ function renderizarArbol(personas) {
             <div class="tags-gen">
                 <span class="tag">${persona.generacion}</span>
                 <span class="tag ${persona.sexo.toLowerCase()}">${persona.sexo}</span>
+                ${persona.nacionalidad ? `<span class="tag nacionalidad">🌍 ${persona.nacionalidad}</span>` : ''}
             </div>
             <div class="edad-aprox">Edad aprox.: ${edadAprox} años</div>
             <div class="seccion-parejas">
                 <h4>Pareja(s):</h4>
                 <ul class="lista-nombres">
-                    ${persona.parejas?.length ? persona.parejas.map(p => `<li>❤️ ${p}</li>`).join('') : '<li>Sin pareja</li>'}
+                    ${persona.parejas?.length ? persona.parejas.map(p => `<li>❤️ ${p}</li>`).join('') : '<li>Sin pareja registrada</li>'}
                 </ul>
             </div>
             <div class="seccion-hijos">
                 <h4>Descendientes (${persona.hijos?.length || 0}):</h4>
                 <ul class="lista-nombres">
-                    ${persona.hijos?.length ? persona.hijos.map(h => `<li>• ${h}</li>`).join('') : '<li>Sin hijos</li>'}
+                    ${persona.hijos?.length ? persona.hijos.map(h => `<li>• ${h}</li>`).join('') : '<li>Sin descendientes</li>'}
                 </ul>
             </div>
         `;
         contenedor.appendChild(tarjeta);
     });
+}
+
+function obtenerColorHex(nombreColor) {
+    const colores = {
+        'rojo': '#dc2626',
+        'azul': '#2563eb',
+        'amarillo': '#d97706',
+        'verde': '#16a34a',
+        'morado': '#9333ea'
+    };
+    return colores[nombreColor] || '#2563eb';
+}
+
+// Filtros de búsqueda
+function filtrarTarjetas() {
+    const texto = document.getElementById("buscador").value.toLowerCase();
+    const genFiltro = document.getElementById("filtro-generacion").value;
+
+    const filtrados = listaPersonas.filter(p => {
+        const coincideTexto = `${p.nombre} ${p.apellido} ${p.nacionalidad || ''}`.toLowerCase().includes(texto);
+        const coincideGen = genFiltro === 'todas' || p.generacion === genFiltro;
+        return coincideTexto && coincideGen;
+    });
+
+    renderizarArbol(filtrados);
+}
+
+// Panel de Administración (Formularios y Dinámica)
+function toggleColoresRama() {
+    const sexo = document.getElementById("inp-sexo").value;
+    const bloqueColores = document.getElementById("bloque-colores");
+    if (sexo === 'F') {
+        bloqueColores.classList.remove("oculto");
+    } else {
+        bloqueColores.classList.add("oculto");
+    }
+}
+
+function toggleDobleColor() {
+    const tipo = document.getElementById("inp-tipo-color").value;
+    const grupoColor2 = document.getElementById("grupo-color-2");
+    if (tipo === '50-50') {
+        grupoColor2.classList.remove("oculto");
+    } else {
+        grupoColor2.classList.add("oculto");
+    }
+}
+
+function guardarFamiliar(event) {
+    event.preventDefault();
+    const editId = document.getElementById("edit-id").value;
+    
+    const nombre = document.getElementById("inp-nombre").value.trim();
+    const apellido = document.getElementById("inp-apellido").value.trim();
+    const generacion = document.getElementById("inp-generacion").value;
+    const sexo = document.getElementById("inp-sexo").value;
+    const anioNacimiento = parseInt(document.getElementById("inp-anio").value);
+    const nacionalidad = document.getElementById("inp-nacionalidad").value.trim();
+    
+    const parejasStr = document.getElementById("inp-parejas").value;
+    const hijosStr = document.getElementById("inp-hijos").value;
+    
+    const parejas = parejasStr ? parejasStr.split(',').map(s => s.trim()).filter(Boolean) : [];
+    const hijos = hijosStr ? hijosStr.split(',').map(s => s.trim()).filter(Boolean) : [];
+
+    let ramaColor = "neutro";
+    let color1 = "";
+    let color2 = "";
+
+    if (sexo === 'F') {
+        const tipoColor = document.getElementById("inp-tipo-color").value;
+        if (tipoColor === 'unico') {
+            ramaColor = document.getElementById("inp-color-1").value;
+        } else {
+            ramaColor = "50-50";
+            color1 = document.getElementById("inp-color-1").value;
+            color2 = document.getElementById("inp-color-2").value;
+        }
+    }
+
+    const id = editId ? editId : `${nombre.toLowerCase()}_${apellido.toLowerCase()}`.replace(/\s+/g, '_');
+
+    const objetoFamiliar = {
+        id,
+        nombre,
+        apellido,
+        generacion,
+        sexo,
+        anioNacimiento,
+        nacionalidad,
+        ramaColor,
+        color1,
+        color2,
+        parejas,
+        hijos
+    };
+
+    if (editId) {
+        const index = listaPersonas.findIndex(p => p.id === editId);
+        if (index !== -1) listaPersonas[index] = objetoFamiliar;
+    } else {
+        listaPersonas.push(objetoFamiliar);
+    }
+
+    limpiarFormulario();
+    actualizarListaAdmin();
+    alert("¡Familiar guardado con éxito! No olvides hacer clic en 'Exportar JSON' para descargar tu archivo actualizado.");
+}
+
+function actualizarListaAdmin() {
+    const contenedorLista = document.getElementById("lista-admin-registros");
+    document.getElementById("contador-registros").innerText = listaPersonas.length;
+    contenedorLista.innerHTML = "";
+
+    listaPersonas.forEach(p => {
+        const fila = document.createElement("div");
+        fila.className = "admin-item-row";
+        fila.innerHTML = `
+            <span><b>${p.nombre} ${p.apellido || ''}</b> (${p.generacion} - ${p.sexo}) [${p.nacionalidad || 'Sin nacionalidad'}]</span>
+            <div class="admin-item-botones">
+                <button class="btn-editar-item" onclick="cargarParaEditar('${p.id}')">Editar</button>
+                <button class="btn-eliminar-item" onclick="eliminarFamiliar('${p.id}')">Eliminar</button>
+            </div>
+        `;
+        contenedorLista.appendChild(fila);
+    });
+}
+
+function cargarParaEditar(id) {
+    const p = listaPersonas.find(item => item.id === id);
+    if (!p) return;
+
+    cambiarPestana('admin');
+    document.getElementById("edit-id").value = p.id;
+    document.getElementById("inp-nombre").value = p.nombre;
+    document.getElementById("inp-apellido").value = p.apellido || '';
+    document.getElementById("inp-generacion").value = p.generacion;
+    document.getElementById("inp-sexo").value = p.sexo;
+    document.getElementById("inp-anio").value = p.anioNacimiento;
+    document.getElementById("inp-nacionalidad").value = p.nacionalidad || '';
+    
+    document.getElementById("inp-parejas").value = p.parejas ? p.parejas.join(', ') : '';
+    document.getElementById("inp-hijos").value = p.hijos ? p.hijos.join(', ') : '';
+
+    toggleColoresRama();
+    if (p.sexo === 'F') {
+        if (p.ramaColor === '50-50') {
+            document.getElementById("inp-tipo-color").value = '50-50';
+            toggleDobleColor();
+            document.getElementById("inp-color-1").value = p.color1 || 'azul';
+            document.getElementById("inp-color-2").value = p.color2 || 'rojo';
+        } else {
+            document.getElementById("inp-tipo-color").value = 'unico';
+            toggleDobleColor();
+            document.getElementById("inp-color-1").value = p.ramaColor || 'azul';
+        }
+    }
+    document.getElementById("titulo-formulario").innerText = `Editando a: ${p.nombre} ${p.apellido || ''}`;
+}
+
+function eliminarFamiliar(id) {
+    if (confirm("¿Estás seguro de eliminar a este familiar?")) {
+        listaPersonas = listaPersonas.filter(p => p.id !== id);
+        actualizarListaAdmin();
+        renderizarArbol(listaPersonas);
+    }
+}
+
+function limpiarFormulario() {
+    document.getElementById("form-familiar").reset();
+    document.getElementById("edit-id").value = "";
+    document.getElementById("titulo-formulario").innerText = "Registrar / Editar Familiar";
+    document.getElementById("bloque-colores").classList.add("oculto");
+    document.getElementById("grupo-color-2").classList.add("oculto");
+}
+
+function exportarJSON() {
+    const datosFinales = { personas: listaPersonas };
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(datosFinales, null, 2));
+    const downloadAnchor = document.createElement('a');
+    downloadAnchor.setAttribute("href", dataStr);
+    downloadAnchor.setAttribute("download", "familia.json");
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    downloadAnchor.remove();
 }
