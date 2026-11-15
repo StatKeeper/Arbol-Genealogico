@@ -1,1 +1,41 @@
-
+{
+  "personas": [
+    {
+      "id": "preston_garv",
+      "nombre": "Preston",
+      "apellido": "Garv",
+      "generacion": "Gen 1",
+      "sexo": "M",
+      "anioNacimiento": 1944,
+      "ramaColor": "neutro",
+      "parejas": ["Sara John Brow", "Judy John Scot"],
+      "hijos": ["Jerry Garv John", "Jesse Garv John", "Andrea Garv John"]
+    },
+    {
+      "id": "sara_brow",
+      "nombre": "Sara",
+      "apellido": "John Brow",
+      "generacion": "Gen 1",
+      "sexo": "F",
+      "anioNacimiento": 1963,
+      "ramaColor": "azul",
+      "parejas": ["Preston Garv"],
+      "hijos": ["Jerry Garv John", "Jesse Garv John"]
+    },
+    {
+      "id": "judy_scot",
+      "nombre": "Judy",
+      "apellido": "John Scot",
+      "generacion": "Gen 1",
+      "sexo": "F",
+      "ramaColor": "50-50",
+      "color1": "#2563eb",
+      "color2": "#dc2626",
+      "bg1": "#eff6ff",
+      "bg2": "#fef2f2",
+      "anioNacimiento": 1960,
+      "parejas": ["Preston Garv", "Kenneth John"],
+      "hijos": ["Andrea Garv John"]
+    }
+  ]
+}
