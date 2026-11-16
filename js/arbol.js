@@ -178,7 +178,6 @@ function obtenerCodigoISO(pais) {
     };
     return codigos[limpio] || null;
 }
-
 function obtenerInfoBanderasYTexto(persona) {
     const paisPropio = (persona.nacionalidad || '').trim();
     
@@ -215,6 +214,7 @@ function obtenerInfoBanderasYTexto(persona) {
     let htmlBanderas = '<div class="banderas-contenedor-der">';
     const textosArray = [];
     let tieneBanderas = false;
+    let padreTieneBanderas = false;
 
     // 1. Procesar todas las banderas del Padre
     if (paisPadre !== '') {
@@ -224,6 +224,7 @@ function obtenerInfoBanderasYTexto(persona) {
             if (iso) {
                 htmlBanderas += `<img src="https://flagcdn.com/w40/${iso}.png" alt="${p}" title="Padre: ${p}" class="bandera-doble-item">`;
                 tieneBanderas = true;
+                padreTieneBanderas = true;
             }
         });
         textosArray.push(paisPadre);
