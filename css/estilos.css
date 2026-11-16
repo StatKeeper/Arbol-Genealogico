@@ -199,6 +199,7 @@ body {
     flex-shrink: 0;
 }
 
+/* Nombres en Color/Negrilla y Apellidos en Negrita Negra */
 .info-principal h3 { font-size: 0.95rem; line-height: 1.2; }
 .nombre-persona { font-weight: 700; }
 .apellido-persona { font-weight: 700; color: #111827; display: block; font-size: 0.9rem; }
@@ -349,7 +350,7 @@ body {
     font-size: 0.85rem;
 }
 
-/* Panel Administrador */
+/* Panel Administrador (Ambos paneles igualados a la misma altura) */
 .admin-container {
     flex: 1;
     overflow-y: auto;
@@ -357,14 +358,25 @@ body {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 30px;
+    align-items: stretch;
 }
-.admin-form-card, .admin-list-card {
+.admin-form-card {
     background: #ffffff;
     border: 2px solid var(--border-antique);
     border-radius: 10px;
     padding: 24px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.06);
     height: fit-content;
+}
+.admin-list-card {
+    background: #ffffff;
+    border: 2px solid var(--border-antique);
+    border-radius: 10px;
+    padding: 24px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
 .admin-form-card h2, .admin-list-card h3 { font-size: 1.1rem; margin-bottom: 18px; color: var(--primary-classic); text-transform: uppercase; }
 .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
@@ -375,7 +387,15 @@ body {
 .btn-guardar { background: #16a34a; color: white; border: none; padding: 10px 18px; border-radius: 6px; font-weight: 700; cursor: pointer; }
 .btn-limpiar { background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; padding: 10px 18px; border-radius: 6px; font-weight: 600; cursor: pointer; }
 
-#lista-admin-registros { display: flex; flex-direction: column; gap: 8px; max-height: 450px; overflow-y: auto; }
+#lista-admin-registros {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+    max-height: 680px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
 .admin-item-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; background: #fcfbfa; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 0.88rem; }
 .admin-item-botones { display: flex; gap: 6px; }
 .admin-item-botones button { padding: 5px 10px; font-size: 0.78rem; border-radius: 6px; cursor: pointer; font-weight: 600; border: none; }
