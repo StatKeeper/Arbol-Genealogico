@@ -285,20 +285,30 @@ function obtenerEstiloPersona(persona) {
         }
     }
 
-    const ramasDirectas = listaRamas.filter(r => r.mujer === nombreCompleto || r.hombre === nombreCompleto);
+ const ramasDirectas = listaRamas.filter(r => r.mujer === nombreCompleto || r.hombre === nombreCompleto);
     let colorPropioObj = null;
     if (ramasDirectas.length > 0) {
-        colorPropioObj = obtenerObjetoColorPorIdOPersonalizado(ramasDirectas[0].colorId);
+        const colorCandidato = obtenerObjetoColorPorIdOPersonalizado(ramasDirectas[0].colorId);
+        // Si el color tiene un patron complejo, usamos un respaldo sólido para el degradado 50/50
+        if (colorCandidato && colorCandidato.tipo === 'patron') {
+            colorPropioObj = { ...colorCandidato, fondo: colorCandidato.borde };
+        } else {
+            colorPropioObj = colorCandidato;
+        }
     } else if (persona.sexo === 'F' && persona.parejas && persona.parejas.length > 0) {
         for (const nombrePareja of persona.parejas) {
             const ramaPareja = listaRamas.find(r => r.hombre === nombrePareja || r.mujer === nombrePareja);
             if (ramaPareja) {
-                colorPropioObj = obtenerObjetoColorPorIdOPersonalizado(ramaPareja.colorId);
+                const colorCandidato = obtenerObjetoColorPorIdOPersonalizado(ramaPareja.colorId);
+                if (colorCandidato && colorCandidato.tipo === 'patron') {
+                    colorPropioObj = { ...colorCandidato, fondo: colorCandidato.borde };
+                } else {
+                    colorPropioObj = colorCandidato;
+                }
                 break;
             }
         }
-    }
-
+    }   
     if (colorHeredadoObj && colorPropioObj && colorHeredadoObj.id !== colorPropioObj.id) {
         return {
             tipo: '50-50',
