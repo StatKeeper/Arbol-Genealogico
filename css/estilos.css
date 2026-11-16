@@ -136,10 +136,21 @@ body {
     color: #4b5563;
 }
 
-.bandera-header {
-    width: 24px;
+/* --- BANDERAS UNIFORMES Y VERTICALES --- */
+.banderas-contenedor-der {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    align-items: center;
+}
+
+.bandera-header, .bandera-doble-item {
+    width: 28px !important;
+    height: 20px !important;
+    object-fit: cover;
     border-radius: 3px;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+    display: block;
 }
 
 .badge-rama {
@@ -212,7 +223,7 @@ body {
 
 .nucleo-familiar-arbol {
     display: flex;
-    align-items: center; /* Alineación perfecta al centro vertical */
+    align-items: center;
     gap: 30px;
 }
 
@@ -357,11 +368,11 @@ body {
     border: 1px solid #f3f4f6;
 }
 
-/* --- GESTIÓN DE RAMAS (Amplia y Balanceada) --- */
+/* --- GESTIÓN DE RAMAS (Expandida verticalmente y balanceada) --- */
 .ramas-container {
     padding: 30px;
     display: grid;
-    grid-template-columns: 1fr 1fr; /* Espacios iguales y amplios a ambos lados */
+    grid-template-columns: 1fr 1fr;
     gap: 30px;
     max-width: 1400px;
     margin: 0 auto;
@@ -373,14 +384,14 @@ body {
     border-radius: 10px;
     padding: 24px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    display: flex;
+    flex-direction: column;
 }
 
 .paleta-grid {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
     gap: 8px;
-    max-height: 260px;
-    overflow-y: auto;
     padding: 4px;
     border: 1px solid #e5e7eb;
     border-radius: 6px;
@@ -422,9 +433,10 @@ body {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    max-height: 450px;
+    max-height: 600px; /* Expandido para mostrar más registros sin apretar */
     overflow-y: auto;
     margin-top: 12px;
+    padding-right: 4px;
 }
 
 .rama-item-row {
