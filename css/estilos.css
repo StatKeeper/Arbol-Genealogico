@@ -115,12 +115,110 @@ body {
 #arbol-net {
     display: flex;
     flex-direction: column;
-    gap: 40px;
+    gap: 50px;
     align-items: flex-start;
     min-width: max-content;
 }
 
-.fila-generacion { display: flex; gap: 30px; align-items: flex-start; }
+/* Estructura Jerárquica y Conectores del Árbol */
+.nucleo-familiar-arbol {
+    display: flex;
+    align-items: flex-start;
+    gap: 0;
+    background: rgba(255, 255, 255, 0.35);
+    border: 1.5px dashed rgba(184, 151, 106, 0.55);
+    border-radius: 14px;
+    padding: 22px;
+}
+
+.padre-principal-box {
+    display: flex;
+    align-items: center;
+}
+
+/* Conector horizontal entre Cabeza de Familia y sus Parejas */
+.conector-horizontal-union {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    padding-top: 55px;
+}
+
+.linea-union {
+    width: 28px;
+    height: 3px;
+    background: var(--accent-myth);
+}
+
+.corazon-union {
+    background: #fff;
+    border: 2px solid var(--accent-myth);
+    border-radius: 50%;
+    width: 26px;
+    height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.ramas-parejas-wrapper {
+    display: flex;
+    gap: 28px;
+    align-items: flex-start;
+    position: relative;
+    padding-left: 16px;
+    border-left: 3px solid var(--accent-myth);
+}
+
+/* Cada columna de Pareja + sus Hijos debajo */
+.columna-rama-pareja {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Conector vertical con flecha hacia la descendencia */
+.conector-vertical-hijos {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 4px 0;
+}
+
+.linea-vertical-desc {
+    width: 3px;
+    height: 26px;
+    background: var(--primary-classic);
+}
+
+.flecha-vertical-desc {
+    width: 0;
+    height: 0;
+    border-left: 7px solid transparent;
+    border-right: 7px solid transparent;
+    border-top: 10px solid var(--primary-classic);
+}
+
+.etiqueta-descendencia {
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: var(--primary-classic);
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid var(--border-antique);
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin: 3px 0;
+}
+
+.contenedor-hijos-rama {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-items: center;
+    padding-top: 4px;
+}
 
 /* Tarjetas Familiares */
 .tarjeta-familiar {
@@ -350,7 +448,7 @@ body {
     font-size: 0.85rem;
 }
 
-/* Panel Administrador (Ambos paneles igualados a la misma altura) */
+/* Panel Administrador */
 .admin-container {
     flex: 1;
     overflow-y: auto;
