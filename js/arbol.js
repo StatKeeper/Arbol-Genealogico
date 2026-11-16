@@ -316,7 +316,7 @@ function crearElementoTarjeta(persona) {
         badgeHtml = `<div class="badge-rama" style="border-color: ${estiloInfo.top.borde}; color: ${estiloInfo.top.texto};">◐ ${estiloInfo.etiqueta} (50/50)</div>`;
     }
 
-    tarjeta.className += " tarjeta-familiar";
+    tarjeta.className = "tarjeta-familiar";
     if (estiloInline) tarjeta.setAttribute("style", estiloInline);
 
     let avatarContent = `${persona.nombre[0]}${persona.apellido ? persona.apellido[0] : ''}`;
@@ -867,7 +867,7 @@ function limpiarFormulario() {
     poblarSelectoresParejasHijosAdmin();
 }
 
-function exportarJSON() {
+export function exportarJSON() {
     const datosFinales = { personas: listaPersonas, ramas: listaRamas };
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(datosFinales, null, 2));
     const downloadAnchor = document.createElement('a');
