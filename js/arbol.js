@@ -239,7 +239,6 @@ function obtenerInfoBanderasYTexto(persona) {
     const textoTag = textosPaises.join(' / ');
     return { htmlBanderas, textoTag };
 }
-
 function obtenerObjetoColorPorIdOPersonalizado(colorId) {
     if (colorId && colorId.startsWith('#')) {
         return {
