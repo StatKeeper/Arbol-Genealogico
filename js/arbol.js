@@ -44,7 +44,7 @@ function calcularEdad(anioNacimiento) {
     return anioActual - anioNacimiento;
 }
 
-// Renderizado del Árbol estructurado por Generaciones/Filas
+// Renderizado del Árbol estructurado por Filas (Gen 1 arriba, Gen 2 abajo)
 function renderizarArbol(personas) {
     const contenedor = document.getElementById("arbol-net");
     contenedor.innerHTML = "";
@@ -54,7 +54,7 @@ function renderizarArbol(personas) {
         return;
     }
 
-    // Agrupar por generación (Gen 1, Gen 2, etc.)
+    // Agrupar por generación
     const generaciones = {};
     personas.forEach(persona => {
         const gen = persona.generacion || 'Gen 1';
@@ -85,6 +85,7 @@ function renderizarArbol(personas) {
             const iniciales = `${persona.nombre[0]}${persona.apellido ? persona.apellido[0] : ''}`;
             const edadAprox = calcularEdad(persona.anioNacimiento);
 
+            // Tarjeta limpia sin texto interno de descendientes (ahora son tarjetas independientes abajo)
             tarjeta.innerHTML = `
                 <div class="card-header">
                     <div class="avatar">${iniciales}</div>
@@ -103,12 +104,6 @@ function renderizarArbol(personas) {
                     <h4>Pareja(s):</h4>
                     <ul class="lista-nombres">
                         ${persona.parejas?.length ? persona.parejas.map(p => `<li>❤️ ${p}</li>`).join('') : '<li>Sin pareja registrada</li>'}
-                    </ul>
-                </div>
-                <div class="seccion-hijos">
-                    <h4>Descendientes (${persona.hijos?.length || 0}):</h4>
-                    <ul class="lista-nombres">
-                        ${persona.hijos?.length ? persona.hijos.map(h => `<li>• ${h}</li>`).join('') : '<li>Sin descendientes</li>'}
                     </ul>
                 </div>
             `;
@@ -130,7 +125,7 @@ function obtenerColorHex(nombreColor) {
     return colores[nombreColor] || '#2563eb';
 }
 
-// Habilitar arrastre del lienzo con el mouse (Pan/Drag)
+// Habilitar arrastre del lienzo con el mouse
 function configurarArrastreLienzo() {
     const lienzo = document.getElementById("canvas-arbol");
     let estaArrastrando = false;
