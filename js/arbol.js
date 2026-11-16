@@ -249,36 +249,38 @@ function poblarSelectoresParejasHijosAdmin(parejasSeleccionadas = [], hijosSelec
 }
 
 function obtenerEstiloPersona(persona) {
-    if (persona.sexo === 'M') {
+    const nombreCompleto = `${persona.nombre} ${persona.apellido || ''}`.trim();
+
+    // 1. Verificar si es un varón de primera generación (Cabezas de familia / fundadores principales sin padres registrados)
+    const tienePadreRegistrado = listaPersonas.some(p => p.hijos && p.hijos.includes(nombreCompleto));
+    if (persona.sexo === 'M' && !tienePadreRegistrado) {
         return { tipo: 'neutro', colorNombre: '#1d4ed8' };
     }
 
-    const nombreCompleto = `${persona.nombre} ${persona.apellido || ''}`.trim();
-    
-    // 1. Buscar color heredado de la madre biológica o linaje de origen
+    // 2. Buscar color heredado de la madre biológica o linaje de origen
     const madreBiologica = listaPersonas.find(p => p.sexo === 'F' && p.hijos && p.hijos.includes(nombreCompleto));
     let colorHeredadoObj = null;
     if (madreBiologica) {
-        const nombreMadre = `${madreBiologica.nombre} ${madreBiologica.apellido || ''}`.trim();
+        const nombreMadre = `${madreBiologica.nombre} ${madreBiological.apellido || ''}`.trim();
         const ramaMadre = listaRamas.find(r => r.mujer === nombreMadre);
         if (ramaMadre) {
             colorHeredadoObj = PALETA_COLORES.find(c => c.id === ramaMadre.colorId);
         } else {
             const estiloAbuela = obtenerEstiloPersona(madreBiologica);
-            if (estiloAbuela.tipo === 'unico') {
-                colorHeredadoObj = estiloAbuela.color;
+            if (estiloAbuela.tipo === 'unico' || estiloAbuela.tipo === '50-50') {
+                colorHeredadoObj = estiloAbuela.color || estiloAbuela.top;
             }
         }
     }
 
-    // 2. Buscar si ella misma formó una rama propia con su propia pareja
-    const ramasDirectas = listaRamas.filter(r => r.mujer === nombreCompleto);
+    // 3. Buscar si la persona misma formó una rama propia con su propia pareja
+    const ramasDirectas = listaRamas.filter(r => r.mujer === nombreCompleto || r.hombre === nombreCompleto);
     let colorPropioObj = null;
     if (ramasDirectas.length > 0) {
         colorPropioObj = PALETA_COLORES.find(c => c.id === ramasDirectas[0].colorId);
     }
 
-    // 3. Si tiene color heredado Y color propio diferente -> Aplicar diseño 50/50
+    // 4. SI TIENE HERENCIA Y ADEMÁS FORMA NUEVA RAMA -> Estilo 50/50 (Arriba origen, Abajo nueva rama)
     if (colorHeredadoObj && colorPropioObj && colorHeredadoObj.id !== colorPropioObj.id) {
         return {
             tipo: '50-50',
@@ -289,16 +291,20 @@ function obtenerEstiloPersona(persona) {
         };
     }
 
-    // 4. Si solo tiene color propio directo de su rama
+    // 5. SI TIENE RAMA DIRECTA PROPIA (como las mujeres fundadoras o cabezas de línea)
     if (colorPropioObj) {
         return { tipo: 'unico', color: colorPropioObj, etiqueta: `Color ${colorPropioObj.num} - ${colorPropioObj.nombre}`, colorNombre: colorPropioObj.texto };
     }
 
-    // 5. Si solo tiene color heredado
+    // 6. SI ES DESCENDIENTE (hijo/hija de 2da generación en adelante) HEREDA EL 100% DEL COLOR DE SU RAMA DE ORIGEN
     if (colorHeredadoObj) {
         return { tipo: 'unico', color: colorHeredadoObj, etiqueta: `Heredado: Color ${colorHeredadoObj.num} - ${colorHeredadoObj.nombre}`, colorNombre: colorHeredadoObj.texto };
     }
 
+    // 7. Por defecto neutro según sexo
+    if (persona.sexo === 'M') {
+        return { tipo: 'neutro', colorNombre: '#1d4ed8' };
+    }
     return { tipo: 'neutro', colorNombre: '#be185d' };
 }
 
