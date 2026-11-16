@@ -17,6 +17,7 @@
         <nav class="nav-tabs">
             <button id="tab-arbol" class="tab-btn active" onclick="cambiarPestana('arbol')">Vista del Árbol</button>
             <button id="tab-columnas" class="tab-btn" onclick="cambiarPestana('columnas')">Vista en Columnas</button>
+            <button id="tab-ramas" class="tab-btn" onclick="cambiarPestana('ramas')">🎨 Gestión de Ramas</button>
             <button id="tab-admin" class="tab-btn" onclick="cambiarPestana('admin')">Administrar / Agregar</button>
         </nav>
 
@@ -43,14 +44,13 @@
         </div>
 
         <main id="canvas-arbol">
-            <div id="arbol-net">
-                <!-- Las tarjetas familiares se dibujan aquí -->
-            </div>
+            <div id="arbol-net"></div>
         </main>
 
         <footer class="app-footer">
-            <span class="leyenda-item"><span class="punto masculino"></span> Hombre (Cabeza de Familia - Neutro)</span>
-            <span class="leyenda-item"><span class="punto femenino"></span> Mujer (Rama con Color Único)</span>
+            <span class="leyenda-item"><span class="punto masculino"></span> Hombre (Sin color / Neutro)</span>
+            <span class="leyenda-item"><span class="punto femenino"></span> Mujer / Descendiente (Color de Rama)</span>
+            <span class="leyenda-item"><span class="punto doble"></span> Doble Rama 50% Arriba / 50% Abajo</span>
             <span class="instruccion">Arrastra el lienzo con el mouse para desplazarte</span>
         </footer>
     </section>
@@ -59,18 +59,54 @@
     <section id="vista-columnas" class="vista-oculta">
         <div class="barra-filtros">
             <label style="align-self: center; font-weight: 700; color: var(--primary-classic);">Seleccionar Cabeza de Familia:</label>
-            <select id="select-cabeza-columna" onchange="renderizarColumnasSeleccionada()" style="padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-antique);">
-                <!-- Se llena dinámicamente -->
-            </select>
+            <select id="select-cabeza-columna" onchange="renderizarColumnasSeleccionada()" style="padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-antique);"></select>
         </div>
         <div class="columnas-container">
-            <div id="columnas-net">
-                <!-- Las columnas se generan aquí -->
+            <div id="columnas-net"></div>
+        </div>
+    </section>
+
+    <!-- PESTAÑA 3: GESTIÓN DE RAMAS Y PALETA DE COLORES -->
+    <section id="vista-ramas" class="vista-oculta">
+        <div class="ramas-container">
+            <div class="ramas-panel-card">
+                <h2>Crear / Asignar Rama por Pareja (Hombre + Mujer)</h2>
+                <p style="font-size: 0.9rem; color: #555; margin-bottom: 16px;">
+                    El hombre permanece sin color. La mujer asume el color elegido y lo hereda hacia abajo a toda su descendencia. Si la mujer ya posee un color previo, su tarjeta se dividirá 50% arriba (origen) y 50% abajo (nueva rama).
+                </p>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>1. Seleccionar Hombre (Sin color):</label>
+                        <select id="rama-select-hombre"></select>
+                    </div>
+                    <div class="form-group">
+                        <label>2. Seleccionar Mujer (Asume color):</label>
+                        <select id="rama-select-mujer"></select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>3. Elige un color disponible (Los colores usados tienen candado 🔒):</label>
+                    <input type="hidden" id="rama-color-seleccionado">
+                    <div id="paleta-colores-grid" class="paleta-grid">
+                        <!-- Se genera dinámicamente con candados -->
+                    </div>
+                </div>
+
+                <button type="button" class="btn-guardar" onclick="crearAsignarRama()" style="margin-top: 10px;">Asignar Color a Rama</button>
+            </div>
+
+            <div class="ramas-panel-card">
+                <h3>Ramas Activas y Leyenda (<span id="contador-ramas">0</span>)</h3>
+                <div id="lista-ramas-activas" class="lista-ramas-box">
+                    <!-- Listado de ramas creadas y botón para liberar color -->
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- PESTAÑA 3: PANEL ADMINISTRADOR -->
+    <!-- PESTAÑA 4: PANEL ADMINISTRADOR -->
     <section id="vista-admin" class="vista-oculta">
         <div class="admin-container">
             <div class="admin-form-card">
@@ -99,34 +135,18 @@
                         </div>
                         <div class="form-group">
                             <label>Sexo *</label>
-                            <select id="inp-sexo" onchange="toggleColoresRama()">
-                                <option value="M">Masculino (M - Sin color de rama)</option>
-                                <option value="F">Femenino (F - Asigna color de rama)</option>
+                            <select id="inp-sexo">
+                                <option value="M">Masculino (M)</option>
+                                <option value="F">Femenino (F)</option>
                             </select>
                         </div>
                         <div class="form-group">
                             <label>Año de Nacimiento (aprox.) *</label>
-                            <input type="number" id="inp-anio" required placeholder="Ej. 1945" min="1800" max="2026">
+                            <input type="number" id="inp-anio" required placeholder="Ej. 1980" min="1800" max="2026">
                         </div>
                         <div class="form-group">
                             <label>País / Nacionalidad</label>
                             <input type="text" id="inp-nacionalidad" placeholder="Ej. Brasil, Argentina, Alemania">
-                        </div>
-                    </div>
-
-                    <!-- Opciones de color (Exclusivo para mujeres / ramas) -->
-                    <div id="bloque-colores" class="bloque-colores oculto">
-                        <h4>Color de Rama Materna (Único por pareja/rama)</h4>
-                        <div class="form-group">
-                            <label>Seleccionar Color</label>
-                            <select id="inp-color-rama">
-                                <option value="rojo">Rojo</option>
-                                <option value="azul">Azul</option>
-                                <option value="amarillo">Amarillo</option>
-                                <option value="verde">Verde</option>
-                                <option value="morado">Morado</option>
-                            </select>
-                            <small style="color: #666; margin-top: 4px;">Los colores ya utilizados por otras ramas aparecerán bloqueados o filtrados.</small>
                         </div>
                     </div>
 
@@ -149,9 +169,7 @@
 
             <div class="admin-list-card">
                 <h3>Registros Actuales (<span id="contador-registros">0</span>)</h3>
-                <div id="lista-admin-registros">
-                    <!-- Lista de registros -->
-                </div>
+                <div id="lista-admin-registros"></div>
             </div>
         </div>
     </section>
