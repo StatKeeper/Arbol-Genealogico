@@ -255,31 +255,48 @@ function obtenerEstiloPersona(persona) {
 
     const nombreCompleto = `${persona.nombre} ${persona.apellido || ''}`.trim();
     
-    // 1. Verificar si esta mujer tiene una rama directa propia asignada en listaRamas
-    const ramasDirectas = listaRamas.filter(r => r.mujer === nombreCompleto);
-    if (ramasDirectas.length > 0) {
-        const colObj = PALETA_COLORES.find(c => c.id === ramasDirectas[0].colorId);
-        if (colObj) {
-            return { tipo: 'unico', color: colObj, etiqueta: `Color ${colObj.num} - ${colObj.nombre}`, colorNombre: colObj.texto };
-        }
-    }
-
-    // 2. Si no tiene rama propia, buscar estrictamente a su madre biológica directa en la base de datos
+    // 1. Buscar color heredado de la madre biológica o linaje de origen
     const madreBiologica = listaPersonas.find(p => p.sexo === 'F' && p.hijos && p.hijos.includes(nombreCompleto));
+    let colorHeredadoObj = null;
     if (madreBiologica) {
         const nombreMadre = `${madreBiologica.nombre} ${madreBiologica.apellido || ''}`.trim();
         const ramaMadre = listaRamas.find(r => r.mujer === nombreMadre);
         if (ramaMadre) {
-            const colObj = PALETA_COLORES.find(c => c.id === ramaMadre.colorId);
-            if (colObj) {
-                return { tipo: 'unico', color: colObj, etiqueta: `Heredado: Color ${colObj.num} - ${colObj.nombre}`, colorNombre: colObj.texto };
+            colorHeredadoObj = PALETA_COLORES.find(c => c.id === ramaMadre.colorId);
+        } else {
+            const estiloAbuela = obtenerEstiloPersona(madreBiologica);
+            if (estiloAbuela.tipo === 'unico') {
+                colorHeredadoObj = estiloAbuela.color;
             }
         }
-        // Si la madre tampoco tiene rama directa, evaluar recursivamente a la abuela materna
-        const estiloAbuela = obtenerEstiloPersona(madreBiologica);
-        if (estiloAbuela.tipo === 'unico') {
-            return estiloAbuela;
-        }
+    }
+
+    // 2. Buscar si ella misma formó una rama propia con su propia pareja
+    const ramasDirectas = listaRamas.filter(r => r.mujer === nombreCompleto);
+    let colorPropioObj = null;
+    if (ramasDirectas.length > 0) {
+        colorPropioObj = PALETA_COLORES.find(c => c.id === ramasDirectas[0].colorId);
+    }
+
+    // 3. Si tiene color heredado Y color propio diferente -> Aplicar diseño 50/50
+    if (colorHeredadoObj && colorPropioObj && colorHeredadoObj.id !== colorPropioObj.id) {
+        return {
+            tipo: '50-50',
+            top: colorHeredadoObj,
+            bottom: colorPropioObj,
+            etiqueta: `Color ${colorHeredadoObj.num} / Color ${colorPropioObj.num}`,
+            colorNombre: colorHeredadoObj.texto
+        };
+    }
+
+    // 4. Si solo tiene color propio directo de su rama
+    if (colorPropioObj) {
+        return { tipo: 'unico', color: colorPropioObj, etiqueta: `Color ${colorPropioObj.num} - ${colorPropioObj.nombre}`, colorNombre: colorPropioObj.texto };
+    }
+
+    // 5. Si solo tiene color heredado
+    if (colorHeredadoObj) {
+        return { tipo: 'unico', color: colorHeredadoObj, etiqueta: `Heredado: Color ${colorHeredadoObj.num} - ${colorHeredadoObj.nombre}`, colorNombre: colorHeredadoObj.texto };
     }
 
     return { tipo: 'neutro', colorNombre: '#be185d' };
@@ -428,24 +445,20 @@ function renderizarArbol(personasAMostrar) {
                 // VINCULACIÓN ESTRICTA Y EXCLUSIVA DE HIJOS POR MADRE:
                 const hijosDeRamaSet = new Set();
                 
-                // 1. Si la madre tiene explícitamente al hijo registrado en su lista de hijos
                 if (parejaObj && parejaObj.hijos) {
                     parejaObj.hijos.forEach(hNom => {
-                        // Verificamos que el padre también lo tenga o que el apellido corresponda
                         if (cabeza.hijos && cabeza.hijos.includes(hNom.trim())) {
                             hijosDeRamaSet.add(hNom.trim());
                         }
                     });
                 }
 
-                // 2. Si el padre lo tiene registrado, validamos estrictamente que la madre tenga este hijo o que el apellido coincida con la madre
                 if (cabeza.hijos) {
                     cabeza.hijos.forEach(hNom => {
                         const hObj = listaPersonas.find(x => `${x.nombre} ${x.apellido || ''}`.trim() === hNom.trim());
                         if (hObj && parejaObj) {
                             const apMadre = (parejaObj.apellido || '').toLowerCase().trim();
                             const apHijo = (hObj.apellido || '').toLowerCase().trim();
-                            // Si la madre tiene el apellido reflejado en el hijo o está en la lista de hijos de la madre
                             const madreLoTieneRegistrada = parejaObj.hijos && parejaObj.hijos.includes(hNom.trim());
                             const apellidoCoincide = apMadre && apHijo.includes(apMadre);
 
