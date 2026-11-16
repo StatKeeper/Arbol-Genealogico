@@ -28,6 +28,9 @@
     <!-- PESTAÑA 1: VISUALIZADOR DEL ÁRBOL -->
     <section id="vista-arbol" class="vista-activa">
         <div class="barra-filtros">
+            <select id="select-cabeza-arbol" onchange="filtrarTarjetas()">
+                <option value="todos">-- Todos los Árboles (Cabezas de Familia) --</option>
+            </select>
             <input type="text" id="buscador" placeholder="Buscar por nombre, apellido o país..." onkeyup="filtrarTarjetas()">
             <select id="filtro-generacion" onchange="filtrarTarjetas()">
                 <option value="todas">Todas las Generaciones</option>
@@ -41,24 +44,28 @@
 
         <main id="canvas-arbol">
             <div id="arbol-net">
-                <!-- Las tarjetas familiares se dibujan aquí por filas -->
+                <!-- Las tarjetas familiares se dibujan aquí -->
             </div>
         </main>
 
         <footer class="app-footer">
-            <span class="leyenda-item"><span class="punto masculino"></span> Hombre (Neutro)</span>
-            <span class="leyenda-item"><span class="punto femenino"></span> Mujer (Color de Rama)</span>
-            <span class="leyenda-item"><span class="punto doble"></span> Mujer (50% / 50% Doble Rama)</span>
-            <span class="instruccion">Arrastra el lienzo con el mouse para desplazarte • Edita registros desde Administrar</span>
+            <span class="leyenda-item"><span class="punto masculino"></span> Hombre (Cabeza de Familia - Neutro)</span>
+            <span class="leyenda-item"><span class="punto femenino"></span> Mujer (Rama con Color Único)</span>
+            <span class="instruccion">Arrastra el lienzo con el mouse para desplazarte</span>
         </footer>
     </section>
 
     <!-- PESTAÑA 2: VISTA EN COLUMNAS -->
     <section id="vista-columnas" class="vista-oculta">
+        <div class="barra-filtros">
+            <label style="align-self: center; font-weight: 700; color: var(--primary-classic);">Seleccionar Cabeza de Familia:</label>
+            <select id="select-cabeza-columna" onchange="renderizarColumnasSeleccionada()" style="padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-antique);">
+                <!-- Se llena dinámicamente -->
+            </select>
+        </div>
         <div class="columnas-container">
-            <h2>Esquema Genealógico por Columnas</h2>
             <div id="columnas-net">
-                <!-- Las columnas familiares se generan aquí dinámicamente -->
+                <!-- Las columnas se generan aquí -->
             </div>
         </div>
     </section>
@@ -93,8 +100,8 @@
                         <div class="form-group">
                             <label>Sexo *</label>
                             <select id="inp-sexo" onchange="toggleColoresRama()">
-                                <option value="M">Masculino (M)</option>
-                                <option value="F">Femenino (F)</option>
+                                <option value="M">Masculino (M - Sin color de rama)</option>
+                                <option value="F">Femenino (F - Asigna color de rama)</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -107,43 +114,25 @@
                         </div>
                     </div>
 
-                    <!-- Opciones de color (solo activas para mujeres) -->
+                    <!-- Opciones de color (Exclusivo para mujeres / ramas) -->
                     <div id="bloque-colores" class="bloque-colores oculto">
-                        <h4>Color de Rama Materna</h4>
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label>Tipo de Color</label>
-                                <select id="inp-tipo-color" onchange="toggleDobleColor()">
-                                    <option value="unico">Color Único</option>
-                                    <option value="50-50">División 50% / 50% (Dos Ramas)</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Color Principal</label>
-                                <select id="inp-color-1">
-                                    <option value="rojo">Rojo</option>
-                                    <option value="azul">Azul</option>
-                                    <option value="amarillo">Amarillo</option>
-                                    <option value="verde">Verde</option>
-                                    <option value="morado">Morado</option>
-                                </select>
-                            </div>
-                            <div class="form-group oculto" id="grupo-color-2">
-                                <label>Segundo Color (50%)</label>
-                                <select id="inp-color-2">
-                                    <option value="azul">Azul</option>
-                                    <option value="rojo">Rojo</option>
-                                    <option value="amarillo">Amarillo</option>
-                                    <option value="verde">Verde</option>
-                                    <option value="morado">Morado</option>
-                                </select>
-                            </div>
+                        <h4>Color de Rama Materna (Único por pareja/rama)</h4>
+                        <div class="form-group">
+                            <label>Seleccionar Color</label>
+                            <select id="inp-color-rama">
+                                <option value="rojo">Rojo</option>
+                                <option value="azul">Azul</option>
+                                <option value="amarillo">Amarillo</option>
+                                <option value="verde">Verde</option>
+                                <option value="morado">Morado</option>
+                            </select>
+                            <small style="color: #666; margin-top: 4px;">Los colores ya utilizados por otras ramas aparecerán bloqueados o filtrados.</small>
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label>Pareja(s) (separadas por coma)</label>
-                        <input type="text" id="inp-parejas" placeholder="Ej. Janet Hick, Kelly Brow, Lori Scot">
+                        <input type="text" id="inp-parejas" placeholder="Ej. Janet Hick, Kelly Brow">
                     </div>
 
                     <div class="form-group">
@@ -161,7 +150,7 @@
             <div class="admin-list-card">
                 <h3>Registros Actuales (<span id="contador-registros">0</span>)</h3>
                 <div id="lista-admin-registros">
-                    <!-- Lista rápida para editar o eliminar registros -->
+                    <!-- Lista de registros -->
                 </div>
             </div>
         </div>
