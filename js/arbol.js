@@ -106,7 +106,7 @@ function obtenerCodigoISO(pais) {
         'albania': 'al', 'alemania': 'de', 'germany': 'de', 'aleman': 'de', 'alemana': 'de', 'andorra': 'ad',
         'armenia': 'am', 'austria': 'at', 'austriaco': 'at', 'azerbaiyan': 'az', 'belgica': 'be', 'belga': 'be',
         'bielorrusia': 'by', 'bosnia y herzegovina': 'ba', 'bulgaria': 'bg', 'chipre': 'cy', 'croacia': 'hr',
-        'dinamarca': 'dk', 'escocia': 'gb-sct', 'escoces': 'gb-sct', 'eslovaquia': 'sk', 'eslovenia': 'si',
+        'dinamarca': 'dk', 'escocia': 'gb-sct', 'escoces': 'gb-sct', 'escocesa': 'gb-sct', 'eslovaquia': 'sk', 'eslovenia': 'si',
         'espana': 'es', 'spain': 'es', 'espanol': 'es', 'espanola': 'es', 'estonia': 'ee', 'finlandia': 'fi',
         'francia': 'fr', 'france': 'fr', 'frances': 'fr', 'francesa': 'fr', 'gales': 'gb-wls', 'georgia': 'ge',
         'grecia': 'gr', 'griego': 'gr', 'holanda': 'nl', 'paises bajos': 'nl', 'hungria': 'hu', 'irlanda': 'ie',
@@ -140,6 +140,52 @@ function obtenerCodigoISO(pais) {
         'samoa': 'ws', 'tonga': 'to', 'tuvalu': 'tv', 'vanuatu': 'vu'
     };
     return codigos[limpio] || null;
+}
+
+// Obtener datos de nacionalidad y banderas (propia o heredada de padre + madre)
+function obtenerInfoBanderasYTexto(persona) {
+    const paisPropio = (persona.nacionalidad || '').trim();
+    if (paisPropio !== '') {
+        const iso = obtenerCodigoISO(paisPropio);
+        const htmlBanderas = iso 
+            ? `<div class="banderas-contenedor-der"><img src="https://flagcdn.com/w40/${iso}.png" alt="${paisPropio}" title="${paisPropio}" class="bandera-header"></div>` 
+            : '';
+        return { htmlBanderas, textoTag: paisPropio };
+    }
+
+    // Si no tiene nacionalidad manual, buscar a su padre y a su madre
+    const nombreCompleto = `${persona.nombre} ${persona.apellido || ''}`.trim();
+    const padre = listaPersonas.find(p => p.sexo === 'M' && p.hijos && p.hijos.includes(nombreCompleto));
+    const madre = listaPersonas.find(p => p.sexo === 'F' && p.hijos && p.hijos.includes(nombreCompleto));
+
+    const paisPadre = padre ? (padre.nacionalidad || '').trim() : '';
+    const paisMadre = madre ? (madre.nacionalidad || '').trim() : '';
+
+    const isoPadre = obtenerCodigoISO(paisPadre);
+    const isoMadre = obtenerCodigoISO(paisMadre);
+
+    if (isoPadre && isoMadre && isoPadre !== isoMadre) {
+        // Dos banderas apiladas: Padre arriba, Madre abajo
+        const htmlBanderas = `
+            <div class="banderas-contenedor-der">
+                <img src="https://flagcdn.com/w40/${isoPadre}.png" alt="${paisPadre}" title="Padre: ${paisPadre}" class="bandera-doble-item">
+                <img src="https://flagcdn.com/w40/${isoMadre}.png" alt="${paisMadre}" title="Madre: ${paisMadre}" class="bandera-doble-item">
+            </div>
+        `;
+        return { htmlBanderas, textoTag: `${paisPadre} / ${paisMadre}` };
+    }
+
+    if (isoPadre) {
+        const htmlBanderas = `<div class="banderas-contenedor-der"><img src="https://flagcdn.com/w40/${isoPadre}.png" alt="${paisPadre}" title="Padre: ${paisPadre}" class="bandera-header"></div>`;
+        return { htmlBanderas, textoTag: paisPadre };
+    }
+
+    if (isoMadre) {
+        const htmlBanderas = `<div class="banderas-contenedor-der"><img src="https://flagcdn.com/w40/${isoMadre}.png" alt="${paisMadre}" title="Madre: ${paisMadre}" class="bandera-header"></div>`;
+        return { htmlBanderas, textoTag: paisMadre };
+    }
+
+    return { htmlBanderas: '', textoTag: '' };
 }
 
 function poblarSelectoresParejasHijosAdmin(parejasSeleccionadas = [], hijosSeleccionados = []) {
@@ -223,7 +269,6 @@ function obtenerEstiloPersona(persona) {
     return { tipo: 'neutro', colorNombre: '#be185d' };
 }
 
-// Función auxiliar para construir el HTML de una tarjeta individual
 function crearElementoTarjeta(persona) {
     const tarjeta = document.createElement("div");
     const estiloInfo = obtenerEstiloPersona(persona);
@@ -247,11 +292,7 @@ function crearElementoTarjeta(persona) {
         avatarContent = `<img src="${persona.foto}" alt="${persona.nombre}" onerror="this.parentElement.innerText='${avatarContent}'">`;
     }
 
-    const iso = obtenerCodigoISO(persona.nacionalidad);
-    const banderaHtml = iso 
-        ? `<img src="https://flagcdn.com/w40/${iso}.png" alt="${persona.nacionalidad}" title="${persona.nacionalidad}" class="bandera-header">` 
-        : '';
-
+    const { htmlBanderas, textoTag } = obtenerInfoBanderasYTexto(persona);
     const edadAprox = calcularEdad(persona.anioNacimiento);
 
     tarjeta.innerHTML = `
@@ -265,13 +306,13 @@ function crearElementoTarjeta(persona) {
                     </h3>
                 </div>
             </div>
-            ${banderaHtml}
+            ${htmlBanderas}
         </div>
         ${badgeHtml}
         <div class="tags-gen">
             <span class="tag">${persona.generacion}</span>
             <span class="tag ${persona.sexo.toLowerCase()}">${persona.sexo}</span>
-            ${persona.nacionalidad ? `<span class="tag nacionalidad">${persona.nacionalidad}</span>` : ''}
+            ${textoTag ? `<span class="tag nacionalidad">${textoTag}</span>` : ''}
         </div>
         <div class="edad-aprox">Edad aprox.: ${edadAprox} años</div>
         <div class="seccion-parejas">
@@ -284,7 +325,6 @@ function crearElementoTarjeta(persona) {
     return tarjeta;
 }
 
-// Renderizado jerárquico con conectores entre pareja y flechas verticales hacia descendientes
 function renderizarArbol(personasAMostrar) {
     const contenedor = document.getElementById("arbol-net");
     contenedor.innerHTML = "";
@@ -293,7 +333,6 @@ function renderizarArbol(personasAMostrar) {
     const textoBuscado = document.getElementById("buscador")?.value.toLowerCase().trim() || "";
     const genFiltro = document.getElementById("filtro-generacion")?.value || "todas";
 
-    // Si hay una búsqueda de texto o filtro de generación específico activo, mostramos las coincidencias limpias
     if (textoBuscado !== "" || genFiltro !== "todas") {
         if (personasAMostrar.length === 0) {
             contenedor.innerHTML = "<p style='padding: 20px; color: #666;'>No hay registros que coincidan con la búsqueda.</p>";
@@ -308,13 +347,11 @@ function renderizarArbol(personasAMostrar) {
         return;
     }
 
-    // Identificar quiénes son hijos de alguien en la base de datos para no ponerlos en el nivel superior
     const setHijosDeAlguien = new Set();
     listaPersonas.forEach(p => {
         (p.hijos || []).forEach(h => setHijosDeAlguien.add(h.trim()));
     });
 
-    // Obtener los cabezas de familia (hombres raíz o seleccionado)
     let cabezas = listaPersonas.filter(p => p.sexo === 'M' && !setHijosDeAlguien.has(`${p.nombre} ${p.apellido || ''}`.trim()));
     if (cabezas.length === 0) {
         cabezas = listaPersonas.filter(p => p.sexo === 'M');
@@ -333,13 +370,11 @@ function renderizarArbol(personasAMostrar) {
         const nucleoDiv = document.createElement("div");
         nucleoDiv.className = "nucleo-familiar-arbol";
 
-        // 1. Tarjeta del Padre / Cabeza de familia
         const padreBox = document.createElement("div");
         padreBox.className = "padre-principal-box";
         padreBox.appendChild(crearElementoTarjeta(cabeza));
         nucleoDiv.appendChild(padreBox);
 
-        // Encontrar todas sus parejas (tanto las registradas en él como las mujeres que lo tengan registrado)
         const nombresParejasSet = new Set(cabeza.parejas || []);
         listaPersonas.forEach(p => {
             if (p.sexo === 'F' && p.parejas && p.parejas.includes(nombreCabeza)) {
@@ -350,13 +385,11 @@ function renderizarArbol(personasAMostrar) {
         const listaParejas = Array.from(nombresParejasSet);
 
         if (listaParejas.length > 0) {
-            // 2. Conector horizontal de unión (línea + corazón)
             const unionDiv = document.createElement("div");
             unionDiv.className = "conector-horizontal-union";
             unionDiv.innerHTML = `<div class="linea-union"></div><div class="corazon-union">❤️</div><div class="linea-union"></div>`;
             nucleoDiv.appendChild(unionDiv);
 
-            // 3. Contenedor de columnas por cada pareja
             const ramasWrapper = document.createElement("div");
             ramasWrapper.className = "ramas-parejas-wrapper";
 
@@ -367,7 +400,6 @@ function renderizarArbol(personasAMostrar) {
                 const colRama = document.createElement("div");
                 colRama.className = "columna-rama-pareja";
 
-                // Tarjeta de la madre/pareja
                 if (parejaObj) {
                     colRama.appendChild(crearElementoTarjeta(parejaObj));
                 } else {
@@ -377,12 +409,10 @@ function renderizarArbol(personasAMostrar) {
                     colRama.appendChild(placeholder);
                 }
 
-                // Buscar hijos en común o registrados en esta pareja
                 const hijosDeRamaSet = new Set();
                 if (parejaObj && parejaObj.hijos) {
                     parejaObj.hijos.forEach(h => hijosDeRamaSet.add(h.trim()));
                 }
-                // Si el hijo tiene el apellido de ambos (ej. "Janice Jhon Hick" o "John Hick"), vincularlo automáticamente si está en hijos del padre
                 if (cabeza.hijos) {
                     cabeza.hijos.forEach(h => {
                         const hObj = listaPersonas.find(x => `${x.nombre} ${x.apellido || ''}`.trim() === h.trim());
@@ -398,7 +428,6 @@ function renderizarArbol(personasAMostrar) {
 
                 const hijosArray = Array.from(hijosDeRamaSet);
 
-                // 4. Conector vertical y flecha hacia los hijos debajo de la madre
                 if (hijosArray.length > 0) {
                     const conectorDesc = document.createElement("div");
                     conectorDesc.className = "conector-vertical-hijos";
@@ -433,7 +462,6 @@ function renderizarArbol(personasAMostrar) {
         contenedor.appendChild(nucleoDiv);
     });
 
-    // Mostrar personas independientes que aún no estén conectadas a un cabeza de familia
     if (cabezaSeleccionada === "todos") {
         const sueltos = listaPersonas.filter(p => !renderizados.has(`${p.nombre} ${p.apellido || ''}`.trim()));
         if (sueltos.length > 0) {
