@@ -181,8 +181,9 @@ function obtenerCodigoISO(pais) {
 
 function obtenerInfoBanderasYTexto(persona) {
     const paisPropio = (persona.nacionalidad || '').trim();
+    
+    // Si la persona tiene nacionalidad propia explícita
     if (paisPropio !== '') {
-        // Si hay una barra '/', significa doble nacionalidad (ej: "EEUU / Alemania")
         if (paisPropio.includes('/')) {
             const partes = paisPropio.split('/').map(p => p.trim());
             let htmlBanderas = '<div class="banderas-contenedor-der">';
@@ -203,6 +204,7 @@ function obtenerInfoBanderasYTexto(persona) {
         return { htmlBanderas, textoTag: paisPropio };
     }
 
+    // Si no tiene nacionalidad propia, heredamos de los padres biológicos acumulando todas sus banderas y separándolas
     const nombreCompleto = `${persona.nombre} ${persona.apellido || ''}`.trim();
     const padre = listaPersonas.find(p => p.sexo === 'M' && p.hijos && p.hijos.includes(nombreCompleto));
     const madre = listaPersonas.find(p => p.sexo === 'F' && p.hijos && p.hijos.includes(nombreCompleto));
@@ -210,32 +212,49 @@ function obtenerInfoBanderasYTexto(persona) {
     const paisPadre = padre ? (padre.nacionalidad || '').trim() : '';
     const paisMadre = madre ? (madre.nacionalidad || '').trim() : '';
 
-    const isoPadre = obtenerCodigoISO(paisPadre);
-    const isoMadre = obtenerCodigoISO(paisMadre);
+    let htmlBanderas = '<div class="banderas-contenedor-der">';
+    const textosArray = [];
+    let tieneBanderas = false;
 
-    if (isoPadre && isoMadre && isoPadre !== isoMadre) {
-        const htmlBanderas = `
-            <div class="banderas-contenedor-der">
-                <img src="https://flagcdn.com/w40/${isoPadre}.png" alt="${paisPadre}" title="Padre: ${paisPadre}" class="bandera-doble-item">
-                <img src="https://flagcdn.com/w40/${isoMadre}.png" alt="${paisMadre}" title="Madre: ${paisMadre}" class="bandera-doble-item">
-            </div>
-        `;
-        return { htmlBanderas, textoTag: `${paisPadre} / ${paisMadre}` };
+    // 1. Procesar todas las banderas del Padre
+    if (paisPadre !== '') {
+        const partesPadre = paisPadre.split('/').map(p => p.trim());
+        partesPadre.forEach(p => {
+            const iso = obtenerCodigoISO(p);
+            if (iso) {
+                htmlBanderas += `<img src="https://flagcdn.com/w40/${iso}.png" alt="${p}" title="Padre: ${p}" class="bandera-doble-item">`;
+                tieneBanderas = true;
+            }
+        });
+        textosArray.push(paisPadre);
     }
 
-    if (isoPadre) {
-        const htmlBanderas = `<div class="banderas-contenedor-der"><img src="https://flagcdn.com/w40/${isoPadre}.png" alt="${paisPadre}" title="Padre: ${paisPadre}" class="bandera-header"></div>`;
-        return { htmlBanderas, textoTag: paisPadre };
+    // 2. Línea divisoria sutil entre el bloque del padre y el de la madre (si ambos aportan nacionalidades)
+    if (paisPadre !== '' && paisMadre !== '') {
+        htmlBanderas += '<div class="separador-banderas" style="width: 24px; height: 2px; background: #cbd5e1; margin: 3px auto; border-radius: 1px;"></div>';
     }
 
-    if (isoMadre) {
-        const htmlBanderas = `<div class="banderas-contenedor-der"><img src="https://flagcdn.com/w40/${isoMadre}.png" alt="${paisMadre}" title="Madre: ${paisMadre}" class="bandera-header"></div>`;
-        return { htmlBanderas, textoTag: paisMadre };
+    // 3. Procesar todas las banderas de la Madre
+    if (paisMadre !== '') {
+        const partesMadre = paisMadre.split('/').map(p => p.trim());
+        partesMadre.forEach(p => {
+            const iso = obtenerCodigoISO(p);
+            if (iso) {
+                htmlBanderas += `<img src="https://flagcdn.com/w40/${iso}.png" alt="${p}" title="Madre: ${p}" class="bandera-doble-item">`;
+                tieneBanderas = true;
+            }
+        });
+        textosArray.push(paisMadre);
     }
 
-    return { htmlBanderas: '', textoTag: '' };
+    htmlBanderas += '</div>';
+
+    if (!tieneBanderas) {
+        return { htmlBanderas: '', textoTag: '' };
+    }
+
+    return { htmlBanderas, textoTag: textosArray.join(' / ') };
 }
-
 function obtenerObjetoColorPorIdOPersonalizado(colorId) {
     if (colorId && colorId.startsWith('#')) {
         return {
