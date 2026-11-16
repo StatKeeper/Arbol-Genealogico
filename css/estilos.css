@@ -212,7 +212,7 @@ body {
 
 .nucleo-familiar-arbol {
     display: flex;
-    align-items: flex-start;
+    align-items: center; /* Alineación perfecta al centro vertical */
     gap: 30px;
 }
 
@@ -220,7 +220,6 @@ body {
     position: sticky;
     left: 20px;
     z-index: 10;
-    align-self: center; /* Alineación perfecta del corazón con el centro de la tarjeta padre */
 }
 
 .conector-horizontal-union {
@@ -294,7 +293,7 @@ body {
     margin-top: 10px;
 }
 
-/* --- VISTA EN COLUMNAS (Ajustada en Fila Horizontal) --- */
+/* --- VISTA EN COLUMNAS --- */
 .columnas-container {
     padding: 24px;
     max-width: 1400px;
@@ -320,7 +319,7 @@ body {
 
 .grid-parejas-hijos {
     display: flex;
-    flex-direction: row; /* Forzar orden horizontal en fila */
+    flex-direction: row;
     gap: 20px;
     overflow-x: auto;
     padding-bottom: 10px;
@@ -358,11 +357,11 @@ body {
     border: 1px solid #f3f4f6;
 }
 
-/* --- GESTIÓN DE RAMAS (Ampliada y Balanceada) --- */
+/* --- GESTIÓN DE RAMAS (Amplia y Balanceada) --- */
 .ramas-container {
     padding: 30px;
     display: grid;
-    grid-template-columns: 1.1fr 1.5fr; /* Más espacio lateral equilibrado */
+    grid-template-columns: 1fr 1fr; /* Espacios iguales y amplios a ambos lados */
     gap: 30px;
     max-width: 1400px;
     margin: 0 auto;
