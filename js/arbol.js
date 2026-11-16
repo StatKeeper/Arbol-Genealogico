@@ -11,6 +11,7 @@ async function cargarDatos() {
         const datos = await respuesta.json();
         listaPersonas = datos.personas || [];
         renderizarArbol(listaPersonas);
+        renderizarColumnas(listaPersonas);
         actualizarListaAdmin();
     } catch (error) {
         console.error("Error al cargar los datos:", error);
@@ -20,21 +21,32 @@ async function cargarDatos() {
 // Control de Pestañas
 function cambiarPestana(pestana) {
     const btnArbol = document.getElementById("tab-arbol");
+    const btnColumnas = document.getElementById("tab-columnas");
     const btnAdmin = document.getElementById("tab-admin");
+    
     const vistaArbol = document.getElementById("vista-arbol");
+    const vistaColumnas = document.getElementById("vista-columnas");
     const vistaAdmin = document.getElementById("vista-admin");
+
+    btnArbol.classList.remove("active");
+    if (btnColumnas) btnColumnas.classList.remove("active");
+    btnAdmin.classList.remove("active");
+
+    vistaArbol.classList.add("vista-oculta");
+    if (vistaColumnas) vistaColumnas.classList.add("vista-oculta");
+    vistaAdmin.classList.add("vista-oculta");
 
     if (pestana === 'arbol') {
         btnArbol.classList.add("active");
-        btnAdmin.classList.remove("active");
         vistaArbol.classList.remove("vista-oculta");
-        vistaAdmin.classList.add("vista-oculta");
         renderizarArbol(listaPersonas);
+    } else if (pestana === 'columnas') {
+        if (btnColumnas) btnColumnas.classList.add("active");
+        if (vistaColumnas) vistaColumnas.classList.remove("vista-oculta");
+        renderizarColumnas(listaPersonas);
     } else {
         btnAdmin.classList.add("active");
-        btnArbol.classList.remove("active");
         vistaAdmin.classList.remove("vista-oculta");
-        vistaArbol.classList.add("vista-oculta");
         actualizarListaAdmin();
     }
 }
@@ -54,7 +66,6 @@ function renderizarArbol(personas) {
         return;
     }
 
-    // Agrupar por generación
     const generaciones = {};
     personas.forEach(persona => {
         const gen = persona.generacion || 'Gen 1';
@@ -85,7 +96,6 @@ function renderizarArbol(personas) {
             const iniciales = `${persona.nombre[0]}${persona.apellido ? persona.apellido[0] : ''}`;
             const edadAprox = calcularEdad(persona.anioNacimiento);
 
-            // Tarjeta limpia sin texto interno de descendientes (ahora son tarjetas independientes abajo)
             tarjeta.innerHTML = `
                 <div class="card-header">
                     <div class="avatar">${iniciales}</div>
@@ -114,6 +124,50 @@ function renderizarArbol(personas) {
     });
 }
 
+// Renderizado de la Vista en Columnas
+function renderizarColumnas(personas) {
+    const contenedor = document.getElementById("columnas-net");
+    if (!contenedor) return;
+    contenedor.innerHTML = "";
+
+    const cabezas = personas.filter(p => p.sexo === 'M' && p.parejas && p.parejas.length > 0);
+
+    if (cabezas.length === 0) {
+        contenedor.innerHTML = "<p style='color: #666;'>No hay cabezas de familia con parejas registradas para mostrar en columnas.</p>";
+        return;
+    }
+
+    cabezas.forEach(cabeza => {
+        const bloque = document.createElement("div");
+        bloque.className = "bloque-familia-col";
+
+        let htmlParejas = `<div class="grid-parejas-hijos">`;
+
+        cabeza.parejas.forEach(nombrePareja => {
+            const parejaObj = personas.find(p => `${p.nombre} ${p.apellido || ''}`.trim() === nombrePareja);
+            const hijosDePareja = parejaObj && parejaObj.hijos ? parejaObj.hijos : [];
+
+            htmlParejas += `
+                <div class="columna-pareja">
+                    <h4>❤️ ${nombrePareja}</h4>
+                    <div class="lista-hijos-columna">
+                        ${hijosDePareja.length > 0 ? hijosDePareja.map(h => `<div class="hijo-item-col">• ${h}</div>`).join('') : '<span style="font-size:0.8rem; color:#777;">Sin hijos directos registrados</span>'}
+                    </div>
+                </div>
+            `;
+        });
+
+        htmlParejas += `</div>`;
+
+        bloque.innerHTML = `
+            <div class="cabeza-familia-titulo">🌳 Cabeza de Familia: ${cabeza.nombre} ${cabeza.apellido || ''}</div>
+            ${htmlParejas}
+        `;
+
+        contenedor.appendChild(bloque);
+    });
+}
+
 function obtenerColorHex(nombreColor) {
     const colores = {
         'rojo': '#dc2626',
@@ -125,7 +179,7 @@ function obtenerColorHex(nombreColor) {
     return colores[nombreColor] || '#2563eb';
 }
 
-// Habilitar arrastre del lienzo con el mouse
+// Arrastre del lienzo con el mouse
 function configurarArrastreLienzo() {
     const lienzo = document.getElementById("canvas-arbol");
     let estaArrastrando = false;
@@ -181,6 +235,16 @@ function toggleColoresRama() {
     }
 }
 
+function toggleDobleColor() {
+    const tipo = document.getElementById("inp-tipo-color").value;
+    const grupoColor2 = document.getElementById("grupo-color-2");
+    if (tipo === '50-50') {
+        grupoColor2.classList.remove("oculto");
+    } else {
+        grupoColor2.classList.add("oculto");
+    }
+}
+
 function guardarFamiliar(event) {
     event.preventDefault();
     const editId = document.getElementById("edit-id").value;
@@ -203,7 +267,14 @@ function guardarFamiliar(event) {
     let color2 = "";
 
     if (sexo === 'F') {
-        ramaColor = document.getElementById("inp-color-1").value;
+        const tipoColor = document.getElementById("inp-tipo-color").value;
+        if (tipoColor === 'unico') {
+            ramaColor = document.getElementById("inp-color-1").value;
+        } else {
+            ramaColor = "50-50";
+            color1 = document.getElementById("inp-color-1").value;
+            color2 = document.getElementById("inp-color-2").value;
+        }
     }
 
     const id = editId ? editId : `${nombre.toLowerCase()}_${apellido.toLowerCase()}`.replace(/\s+/g, '_');
@@ -232,7 +303,8 @@ function guardarFamiliar(event) {
 
     limpiarFormulario();
     actualizarListaAdmin();
-    alert("¡Familiar guardado con éxito! No olvides hacer clic en 'Exportar JSON'.");
+    renderizarColumnas(listaPersonas);
+    alert("¡Familiar guardado con éxito! No olvides hacer clic en 'Exportar JSON' para guardar tus cambios.");
 }
 
 function actualizarListaAdmin() {
@@ -244,7 +316,7 @@ function actualizarListaAdmin() {
         const fila = document.createElement("div");
         fila.className = "admin-item-row";
         fila.innerHTML = `
-            <span><b>${p.nombre} ${p.apellido || ''}</b> (${p.generacion} - ${p.sexo}) [${p.nacionalidad || 'Sin nacionalidad'}]</span>
+            <span><b>${p.nombre} ${p.apellido || ''}</b> (${p.generacion} - ${p.sexo}) [${p.nacionalidad || 'Sin país'}]</span>
             <div class="admin-item-botones">
                 <button class="btn-editar-item" onclick="cargarParaEditar('${p.id}')">Editar</button>
                 <button class="btn-eliminar-item" onclick="eliminarFamiliar('${p.id}')">Eliminar</button>
@@ -272,8 +344,18 @@ function cargarParaEditar(id) {
 
     toggleColoresRama();
     if (p.sexo === 'F') {
-        document.getElementById("inp-color-1").value = p.ramaColor || 'rojo';
+        if (p.ramaColor === '50-50') {
+            document.getElementById("inp-tipo-color").value = '50-50';
+            toggleDobleColor();
+            document.getElementById("inp-color-1").value = p.color1 || 'azul';
+            document.getElementById("inp-color-2").value = p.color2 || 'rojo';
+        } else {
+            document.getElementById("inp-tipo-color").value = 'unico';
+            toggleDobleColor();
+            document.getElementById("inp-color-1").value = p.ramaColor || 'rojo';
+        }
     }
+    document.getElementById("titulo-formulario").innerText = `Editando a: ${p.nombre} ${p.apellido || ''}`;
 }
 
 function eliminarFamiliar(id) {
@@ -281,13 +363,16 @@ function eliminarFamiliar(id) {
         listaPersonas = listaPersonas.filter(p => p.id !== id);
         actualizarListaAdmin();
         renderizarArbol(listaPersonas);
+        renderizarColumnas(listaPersonas);
     }
 }
 
 function limpiarFormulario() {
     document.getElementById("form-familiar").reset();
     document.getElementById("edit-id").value = "";
+    document.getElementById("titulo-formulario").innerText = "Registrar / Editar Familiar";
     document.getElementById("bloque-colores").classList.add("oculto");
+    document.getElementById("grupo-color-2").classList.add("oculto");
 }
 
 function exportarJSON() {
