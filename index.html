@@ -48,9 +48,9 @@
         </main>
 
         <footer class="app-footer">
-            <span class="leyenda-item"><span class="punto masculino"></span> Hombre (Sin color / Neutro)</span>
-            <span class="leyenda-item"><span class="punto femenino"></span> Mujer / Descendiente (Color de Rama)</span>
-            <span class="leyenda-item"><span class="punto doble"></span> Doble Rama 50% Arriba / 50% Abajo</span>
+            <span class="leyenda-item"><span class="punto masculino"></span> Hombre (Nombre Azul / Sin color)</span>
+            <span class="leyenda-item"><span class="punto femenino"></span> Mujer (Color de Rama)</span>
+            <span class="leyenda-item"><span class="punto doble"></span> Doble Rama 50% / 50%</span>
             <span class="instruccion">Arrastra el lienzo con el mouse para desplazarte</span>
         </footer>
     </section>
@@ -72,7 +72,7 @@
             <div class="ramas-panel-card">
                 <h2>Crear / Asignar Rama por Pareja (Hombre + Mujer)</h2>
                 <p style="font-size: 0.9rem; color: #555; margin-bottom: 16px;">
-                    El hombre permanece sin color. La mujer asume el color elegido y lo hereda hacia abajo a toda su descendencia.
+                    El hombre permanece sin color de rama. La mujer asume el color elegido y lo hereda hacia abajo a toda su descendencia.
                 </p>
 
                 <div class="form-grid">
@@ -142,8 +142,14 @@
                         </div>
                         <div class="form-group">
                             <label>País / Nacionalidad</label>
-                            <input type="text" id="inp-nacionalidad" placeholder="Ej. Brasil, Argentina, Alemania">
+                            <input type="text" id="inp-nacionalidad" placeholder="Ej. Brasil, Argentina, Alemania, Perú">
                         </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>URL de la Foto / Retrato (Opcional)</label>
+                        <input type="url" id="inp-foto" placeholder="https://ejemplo.com/foto.jpg (o pega una URL de imagen)">
+                        <small style="color:#666;">Puedes pegar el enlace web de una imagen o foto recortada.</small>
                     </div>
 
                     <div class="form-group">
