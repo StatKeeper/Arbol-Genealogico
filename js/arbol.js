@@ -182,6 +182,20 @@ function obtenerCodigoISO(pais) {
 function obtenerInfoBanderasYTexto(persona) {
     const paisPropio = (persona.nacionalidad || '').trim();
     if (paisPropio !== '') {
+        // Si hay una barra '/', significa doble nacionalidad (ej: "EEUU / Alemania")
+        if (paisPropio.includes('/')) {
+            const partes = paisPropio.split('/').map(p => p.trim());
+            let htmlBanderas = '<div class="banderas-contenedor-der">';
+            partes.forEach(p => {
+                const iso = obtenerCodigoISO(p);
+                if (iso) {
+                    htmlBanderas += `<img src="https://flagcdn.com/w40/${iso}.png" alt="${p}" title="${p}" class="bandera-doble-item">`;
+                }
+            });
+            htmlBanderas += '</div>';
+            return { htmlBanderas, textoTag: paisPropio };
+        }
+
         const iso = obtenerCodigoISO(paisPropio);
         const htmlBanderas = iso 
             ? `<div class="banderas-contenedor-der"><img src="https://flagcdn.com/w40/${iso}.png" alt="${paisPropio}" title="${paisPropio}" class="bandera-header"></div>` 
@@ -271,14 +285,11 @@ function obtenerEstiloPersona(persona) {
         }
     }
 
-    // Buscamos si la persona formó una rama propia (directa en listaRamas)
     const ramasDirectas = listaRamas.filter(r => r.mujer === nombreCompleto || r.hombre === nombreCompleto);
     let colorPropioObj = null;
     if (ramasDirectas.length > 0) {
         colorPropioObj = obtenerObjetoColorPorIdOPersonalizado(ramasDirectas[0].colorId);
     } else if (persona.sexo === 'F' && persona.parejas && persona.parejas.length > 0) {
-        // Si es mujer, tiene color heredado y tiene pareja registrada pero no se creó rama explícita,
-        // buscamos si su pareja forma parte de alguna rama para aplicarle el 50/50 automáticamente
         for (const nombrePareja of persona.parejas) {
             const ramaPareja = listaRamas.find(r => r.hombre === nombrePareja || r.mujer === nombrePareja);
             if (ramaPareja) {
