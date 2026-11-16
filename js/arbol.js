@@ -10,8 +10,9 @@ async function cargarDatos() {
         const respuesta = await fetch('data/familia.json');
         const datos = await respuesta.json();
         listaPersonas = datos.personas || [];
+        poblarSelectoresCabezas();
         renderizarArbol(listaPersonas);
-        renderizarColumnas(listaPersonas);
+        renderizarColumnasSeleccionada();
         actualizarListaAdmin();
     } catch (error) {
         console.error("Error al cargar los datos:", error);
@@ -43,7 +44,7 @@ function cambiarPestana(pestana) {
     } else if (pestana === 'columnas') {
         if (btnColumnas) btnColumnas.classList.add("active");
         if (vistaColumnas) vistaColumnas.classList.remove("vista-oculta");
-        renderizarColumnas(listaPersonas);
+        renderizarColumnasSeleccionada();
     } else {
         btnAdmin.classList.add("active");
         vistaAdmin.classList.remove("vista-oculta");
@@ -56,18 +57,56 @@ function calcularEdad(anioNacimiento) {
     return anioActual - anioNacimiento;
 }
 
-// Renderizado del Árbol estructurado por Filas (Gen 1 arriba, Gen 2 abajo)
-function renderizarArbol(personas) {
+// Poblar selectores automáticos de Cabezas de Familia (Masculinos)
+function poblarSelectoresCabezas() {
+    const cabezas = listaPersonas.filter(p => p.sexo === 'M');
+    
+    const selectArbol = document.getElementById("select-cabeza-arbol");
+    const selectColumna = document.getElementById("select-cabeza-columna");
+
+    if (selectArbol) {
+        selectArbol.innerHTML = '<option value="todos">-- Todos los Árboles (Cabezas de Familia) --</option>';
+        cabezas.forEach(c => {
+            selectArbol.innerHTML += `<option value="${c.nombre} ${c.apellido || ''}">${c.nombre} ${c.apellido || ''}</option>`;
+        });
+    }
+
+    if (selectColumna) {
+        selectColumna.innerHTML = '';
+        cabezas.forEach(c => {
+            selectColumna.innerHTML += `<option value="${c.nombre} ${c.apellido || ''}">${c.nombre} ${c.apellido || ''}</option>`;
+        });
+    }
+}
+
+// Renderizado del Árbol
+function renderizarArbol(personasAMostrar) {
     const contenedor = document.getElementById("arbol-net");
     contenedor.innerHTML = "";
 
-    if (personas.length === 0) {
-        contenedor.innerHTML = "<p style='padding: 20px; color: #666;'>No hay registros en el árbol todavía. Usa la pestaña 'Administrar / Agregar' para crear uno.</p>";
+    const cabezaSeleccionada = document.getElementById("select-cabeza-arbol")?.value || "todos";
+
+    let filtradas = personasAMostrar;
+    if (cabezaSeleccionada !== "todos") {
+        const cabezaObj = listaPersonas.find(p => `${p.nombre} ${p.apellido || ''}`.trim() === cabezaSeleccionada);
+        if (cabezaObj) {
+            // Incluir al cabeza y sus parejas e hijos relacionados
+            const nombresRelacionados = [
+                `${cabezaObj.nombre} ${cabezaObj.apellido || ''}`.trim(),
+                ...(cabezaObj.parejas || []),
+                ...(cabezaObj.hijos || [])
+            ];
+            filtradas = listaPersonas.filter(p => nombresRelacionados.includes(`${p.nombre} ${p.apellido || ''}`.trim()));
+        }
+    }
+
+    if (filtradas.length === 0) {
+        contenedor.innerHTML = "<p style='padding: 20px; color: #666;'>No hay registros para este cabeza de familia.</p>";
         return;
     }
 
     const generaciones = {};
-    personas.forEach(persona => {
+    filtradas.forEach(persona => {
         const gen = persona.generacion || 'Gen 1';
         if (!generaciones[gen]) generaciones[gen] = [];
         generaciones[gen].push(persona);
@@ -80,18 +119,10 @@ function renderizarArbol(personas) {
         generaciones[gen].forEach(persona => {
             const tarjeta = document.createElement("div");
             
-            let claseRama = `rama-${persona.ramaColor || 'neutro'}`;
-            let estiloExtra = "";
-
-            if (persona.ramaColor === '50-50') {
-                claseRama = 'rama-50-50';
-                const col1 = obtenerColorHex(persona.color1 || 'azul');
-                const col2 = obtenerColorHex(persona.color2 || 'rojo');
-                estiloExtra = `style="--color-1: ${col1}; --color-2: ${col2}; --bg-1: ${col1}15; --bg-2: ${col2}15;"`;
-            }
+            // Los hombres (M) no llevan color de rama (neutro). Solo las mujeres (F) llevan color.
+            let claseRama = persona.sexo === 'M' ? 'rama-neutro' : `rama-${persona.ramaColor || 'neutro'}`;
 
             tarjeta.className = `tarjeta-familiar ${claseRama}`;
-            if (estiloExtra) tarjeta.setAttribute("style", estiloExtra);
 
             const iniciales = `${persona.nombre[0]}${persona.apellido ? persona.apellido[0] : ''}`;
             const edadAprox = calcularEdad(persona.anioNacimiento);
@@ -124,59 +155,48 @@ function renderizarArbol(personas) {
     });
 }
 
-// Renderizado de la Vista en Columnas
-function renderizarColumnas(personas) {
+// Renderizado de la Vista en Columnas según el selector
+function renderizarColumnasSeleccionada() {
     const contenedor = document.getElementById("columnas-net");
+    const selectColumna = document.getElementById("select-cabeza-columna");
     if (!contenedor) return;
     contenedor.innerHTML = "";
 
-    const cabezas = personas.filter(p => p.sexo === 'M' && p.parejas && p.parejas.length > 0);
+    const cabezaNombre = selectColumna?.value;
+    const cabeza = listaPersonas.find(p => `${p.nombre} ${p.apellido || ''}`.trim() === cabezaNombre && p.sexo === 'M');
 
-    if (cabezas.length === 0) {
-        contenedor.innerHTML = "<p style='color: #666;'>No hay cabezas de familia con parejas registradas para mostrar en columnas.</p>";
+    if (!cabeza || !cabeza.parejas || cabeza.parejas.length === 0) {
+        contenedor.innerHTML = "<p style='padding: 20px; color: #666;'>Selecciona un cabeza de familia válido con parejas registradas.</p>";
         return;
     }
 
-    cabezas.forEach(cabeza => {
-        const bloque = document.createElement("div");
-        bloque.className = "bloque-familia-col";
+    const bloque = document.createElement("div");
+    bloque.className = "bloque-familia-col";
 
-        let htmlParejas = `<div class="grid-parejas-hijos">`;
+    let htmlParejas = `<div class="grid-parejas-hijos">`;
 
-        cabeza.parejas.forEach(nombrePareja => {
-            const parejaObj = personas.find(p => `${p.nombre} ${p.apellido || ''}`.trim() === nombrePareja);
-            const hijosDePareja = parejaObj && parejaObj.hijos ? parejaObj.hijos : [];
+    cabeza.parejas.forEach(nombrePareja => {
+        const parejaObj = listaPersonas.find(p => `${p.nombre} ${p.apellido || ''}`.trim() === nombrePareja);
+        const hijosDePareja = parejaObj && parejaObj.hijos ? parejaObj.hijos : [];
 
-            htmlParejas += `
-                <div class="columna-pareja">
-                    <h4>❤️ ${nombrePareja}</h4>
-                    <div class="lista-hijos-columna">
-                        ${hijosDePareja.length > 0 ? hijosDePareja.map(h => `<div class="hijo-item-col">• ${h}</div>`).join('') : '<span style="font-size:0.8rem; color:#777;">Sin hijos directos registrados</span>'}
-                    </div>
+        htmlParejas += `
+            <div class="columna-pareja">
+                <h4>❤️ ${nombrePareja}</h4>
+                <div class="lista-hijos-columna">
+                    ${hijosDePareja.length > 0 ? hijosDePareja.map(h => `<div class="hijo-item-col">• ${h}</div>`).join('') : '<span style="font-size:0.8rem; color:#777;">Sin hijos directos registrados</span>'}
                 </div>
-            `;
-        });
-
-        htmlParejas += `</div>`;
-
-        bloque.innerHTML = `
-            <div class="cabeza-familia-titulo">🌳 Cabeza de Familia: ${cabeza.nombre} ${cabeza.apellido || ''}</div>
-            ${htmlParejas}
+            </div>
         `;
-
-        contenedor.appendChild(bloque);
     });
-}
 
-function obtenerColorHex(nombreColor) {
-    const colores = {
-        'rojo': '#dc2626',
-        'azul': '#2563eb',
-        'amarillo': '#d97706',
-        'verde': '#16a34a',
-        'morado': '#9333ea'
-    };
-    return colores[nombreColor] || '#2563eb';
+    htmlParejas += `</div>`;
+
+    bloque.innerHTML = `
+        <div class="cabeza-familia-titulo">🌳 Cabeza de Familia: ${cabeza.nombre} ${cabeza.apellido || ''}</div>
+        ${htmlParejas}
+    `;
+
+    contenedor.appendChild(bloque);
 }
 
 // Arrastre del lienzo con el mouse
@@ -230,18 +250,32 @@ function toggleColoresRama() {
     const bloqueColores = document.getElementById("bloque-colores");
     if (sexo === 'F') {
         bloqueColores.classList.remove("oculto");
+        actualizarColoresDisponibles();
     } else {
         bloqueColores.classList.add("oculto");
     }
 }
 
-function toggleDobleColor() {
-    const tipo = document.getElementById("inp-tipo-color").value;
-    const grupoColor2 = document.getElementById("grupo-color-2");
-    if (tipo === '50-50') {
-        grupoColor2.classList.remove("oculto");
-    } else {
-        grupoColor2.classList.add("oculto");
+// Validación para evitar duplicar colores de rama en mujeres
+function actualizarColoresDisponibles(colorActualExcluir = "") {
+    const selectColor = document.getElementById("inp-color-rama");
+    if (!selectColor) return;
+
+    // Colores ya ocupados por otras mujeres registradas
+    const coloresOcupados = listaPersonas
+        .filter(p => p.sexo === 'F' && p.ramaColor && p.ramaColor !== colorActualExcluir)
+        .map(p => p.ramaColor);
+
+    const opciones = selectColor.options;
+    for (let i = 0; i < opciones.length; i++) {
+        const val = opciones[i].value;
+        if (coloresOcupados.includes(val)) {
+            opciones[i].disabled = true;
+            opciones[i].text = `${val.charAt(0).toUpperCase() + val.slice(1)} (Ocupado)`;
+        } else {
+            opciones[i].disabled = false;
+            opciones[i].text = val.charAt(0).toUpperCase() + val.slice(1);
+        }
     }
 }
 
@@ -262,19 +296,10 @@ function guardarFamiliar(event) {
     const parejas = parejasStr ? parejasStr.split(',').map(s => s.trim()).filter(Boolean) : [];
     const hijos = hijosStr ? hijosStr.split(',').map(s => s.trim()).filter(Boolean) : [];
 
+    // Los hombres (M) no llevan color de rama
     let ramaColor = "neutro";
-    let color1 = "";
-    let color2 = "";
-
     if (sexo === 'F') {
-        const tipoColor = document.getElementById("inp-tipo-color").value;
-        if (tipoColor === 'unico') {
-            ramaColor = document.getElementById("inp-color-1").value;
-        } else {
-            ramaColor = "50-50";
-            color1 = document.getElementById("inp-color-1").value;
-            color2 = document.getElementById("inp-color-2").value;
-        }
+        ramaColor = document.getElementById("inp-color-rama").value;
     }
 
     const id = editId ? editId : `${nombre.toLowerCase()}_${apellido.toLowerCase()}`.replace(/\s+/g, '_');
@@ -288,8 +313,6 @@ function guardarFamiliar(event) {
         anioNacimiento,
         nacionalidad,
         ramaColor,
-        color1,
-        color2,
         parejas,
         hijos
     };
@@ -302,9 +325,11 @@ function guardarFamiliar(event) {
     }
 
     limpiarFormulario();
+    poblarSelectoresCabezas();
     actualizarListaAdmin();
-    renderizarColumnas(listaPersonas);
-    alert("¡Familiar guardado con éxito! No olvides hacer clic en 'Exportar JSON' para guardar tus cambios.");
+    renderizarArbol(listaPersonas);
+    renderizarColumnasSeleccionada();
+    alert("¡Familiar guardado con éxito! Recuerda hacer clic en 'Exportar JSON'.");
 }
 
 function actualizarListaAdmin() {
@@ -344,16 +369,8 @@ function cargarParaEditar(id) {
 
     toggleColoresRama();
     if (p.sexo === 'F') {
-        if (p.ramaColor === '50-50') {
-            document.getElementById("inp-tipo-color").value = '50-50';
-            toggleDobleColor();
-            document.getElementById("inp-color-1").value = p.color1 || 'azul';
-            document.getElementById("inp-color-2").value = p.color2 || 'rojo';
-        } else {
-            document.getElementById("inp-tipo-color").value = 'unico';
-            toggleDobleColor();
-            document.getElementById("inp-color-1").value = p.ramaColor || 'rojo';
-        }
+        actualizarColoresDisponibles(p.ramaColor);
+        document.getElementById("inp-color-rama").value = p.ramaColor || 'rojo';
     }
     document.getElementById("titulo-formulario").innerText = `Editando a: ${p.nombre} ${p.apellido || ''}`;
 }
@@ -361,9 +378,10 @@ function cargarParaEditar(id) {
 function eliminarFamiliar(id) {
     if (confirm("¿Estás seguro de eliminar a este familiar?")) {
         listaPersonas = listaPersonas.filter(p => p.id !== id);
+        poblarSelectoresCabezas();
         actualizarListaAdmin();
         renderizarArbol(listaPersonas);
-        renderizarColumnas(listaPersonas);
+        renderizarColumnasSeleccionada();
     }
 }
 
@@ -372,7 +390,6 @@ function limpiarFormulario() {
     document.getElementById("edit-id").value = "";
     document.getElementById("titulo-formulario").innerText = "Registrar / Editar Familiar";
     document.getElementById("bloque-colores").classList.add("oculto");
-    document.getElementById("grupo-color-2").classList.add("oculto");
 }
 
 function exportarJSON() {
