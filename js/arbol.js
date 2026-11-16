@@ -2,42 +2,42 @@ let listaPersonas = [];
 let listaRamas = [];
 
 const PALETA_COLORES = [
-    { id: 'c1', num: 1, nombre: 'Rojo', borde: '#dc2626', fondo: 'rgba(220, 38, 38, 0.14)', texto: '#991b1b', tipo: 'sólido' },
-    { id: 'c2', num: 2, nombre: 'Azul', borde: '#2563eb', fondo: 'rgba(37, 99, 235, 0.14)', texto: '#1e40af', tipo: 'sólido' },
-    { id: 'c3', num: 3, nombre: 'Amarillo', borde: '#d97706', fondo: 'rgba(217, 119, 6, 0.16)', texto: '#92400e', tipo: 'sólido' },
-    { id: 'c4', num: 4, nombre: 'Verde', borde: '#16a34a', fondo: 'rgba(22, 163, 74, 0.14)', texto: '#166534', tipo: 'sólido' },
-    { id: 'c5', num: 5, nombre: 'Naranja', borde: '#ea580c', fondo: 'rgba(234, 88, 12, 0.14)', texto: '#9a3412', tipo: 'sólido' },
-    { id: 'c6', num: 6, nombre: 'Morado', borde: '#9333ea', fondo: 'rgba(147, 51, 234, 0.14)', texto: '#6b21a8', tipo: 'sólido' },
-    { id: 'c7', num: 7, nombre: 'Magenta', borde: '#db2777', fondo: 'rgba(219, 39, 119, 0.14)', texto: '#9d174d', tipo: 'sólido' },
-    { id: 'c8', num: 8, nombre: 'Turquesa', borde: '#0d9488', fondo: 'rgba(13, 148, 136, 0.14)', texto: '#115e59', tipo: 'sólido' },
-    { id: 'c9', num: 9, nombre: 'Marrón Tierra', borde: '#78350f', fondo: 'rgba(120, 53, 15, 0.14)', texto: '#451a03', tipo: 'sólido' },
-    { id: 'c10', num: 10, nombre: 'Pizarra', borde: '#475569', fondo: 'rgba(71, 85, 105, 0.14)', texto: '#1e293b', tipo: 'sólido' },
-    { id: 'c11', num: 11, nombre: 'Lima', borde: '#65a30d', fondo: 'rgba(101, 163, 13, 0.15)', texto: '#3f6212', tipo: 'sólido' },
-    { id: 'c12', num: 12, nombre: 'Borgoña', borde: '#881337', fondo: 'rgba(136, 19, 55, 0.14)', texto: '#4c0519', tipo: 'sólido' },
-    { id: 'c13', num: 13, nombre: 'Rosa Coral', borde: '#e11d48', fondo: 'rgba(225, 29, 72, 0.14)', texto: '#881337', tipo: 'sólido' },
-    { id: 'c14', num: 14, nombre: 'Cian Profundo', borde: '#0284c7', fondo: 'rgba(2, 132, 199, 0.14)', texto: '#0369a1', tipo: 'sólido' },
-    { id: 'c15', num: 15, nombre: 'Ámbar Claro', borde: '#ca8a04', fondo: 'rgba(202, 138, 4, 0.16)', texto: '#713f12', tipo: 'sólido' },
-    { id: 'c16', num: 16, nombre: 'Esmeralda', borde: '#059669', fondo: 'rgba(5, 150, 105, 0.14)', texto: '#065f46', tipo: 'sólido' },
-    { id: 'c17', num: 17, nombre: 'Teja', borde: '#c2410c', fondo: 'rgba(194, 65, 12, 0.14)', texto: '#7c2d12', tipo: 'sólido' },
-    { id: 'c18', num: 18, nombre: 'Violeta', borde: '#7c3aed', fondo: 'rgba(124, 58, 237, 0.14)', texto: '#5b21b6', tipo: 'sólido' },
-    { id: 'c19', num: 19, nombre: 'Rosa Fucsia', borde: '#c026d3', fondo: 'rgba(192, 38, 211, 0.14)', texto: '#86198f', tipo: 'sólido' },
-    { id: 'c20', num: 20, nombre: 'Azul Acero', borde: '#2563eb', fondo: 'rgba(37, 99, 235, 0.14)', texto: '#1d4ed8', tipo: 'sólido' },
-    { id: 'c21', num: 21, nombre: 'Chocolate', borde: '#57534e', fondo: 'rgba(87, 83, 78, 0.14)', texto: '#292524', tipo: 'sólido' },
-    { id: 'c22', num: 22, nombre: 'Índigo', borde: '#4f46e5', fondo: 'rgba(79, 70, 229, 0.14)', texto: '#3730a3', tipo: 'sólido' },
-    { id: 'c23', num: 23, nombre: 'Oliva', borde: '#4d7c0f', fondo: 'rgba(77, 124, 15, 0.14)', texto: '#365314', tipo: 'sólido' },
-    { id: 'c24', num: 24, nombre: 'Frambuesa', borde: '#9f1239', fondo: 'rgba(159, 18, 57, 0.14)', texto: '#4c0519', tipo: 'sólido' },
-    { id: 'c25', num: 25, nombre: 'Rayas Rojo/Azul', borde: '#1e3a8a', fondo: 'repeating-linear-gradient(45deg, rgba(220, 38, 38, 0.15), rgba(220, 38, 38, 0.15) 10px, rgba(37, 99, 235, 0.15) 10px, rgba(37, 99, 235, 0.15) 20px)', texto: '#1e3a8a', tipo: 'patron' },
-    { id: 'c26', num: 26, nombre: 'Rayas Verde/Oro', borde: '#166534', fondo: 'repeating-linear-gradient(45deg, rgba(22, 163, 74, 0.15), rgba(22, 163, 74, 0.15) 10px, rgba(217, 119, 6, 0.18) 10px, rgba(217, 119, 6, 0.18) 20px)', texto: '#166534', tipo: 'patron' },
-    { id: 'c27', num: 27, nombre: 'Rayas Morado/Rosa', borde: '#6b21a8', fondo: 'repeating-linear-gradient(45deg, rgba(147, 51, 234, 0.15), rgba(147, 51, 234, 0.15) 10px, rgba(219, 39, 119, 0.15) 10px, rgba(219, 39, 119, 0.15) 20px)', texto: '#6b21a8', tipo: 'patron' },
-    { id: 'c28', num: 28, nombre: 'Rayas Naranja/Teal', borde: '#9a3412', fondo: 'repeating-linear-gradient(45deg, rgba(234, 88, 12, 0.15), rgba(234, 88, 12, 0.15) 10px, rgba(13, 148, 136, 0.15) 10px, rgba(13, 148, 136, 0.15) 20px)', texto: '#9a3412', tipo: 'patron' },
-    { id: 'c29', num: 29, nombre: 'Rayas Pizarra/Lima', borde: '#1e293b', fondo: 'repeating-linear-gradient(45deg, rgba(71, 85, 105, 0.15), rgba(71, 85, 105, 0.15) 10px, rgba(101, 163, 13, 0.15) 10px, rgba(101, 163, 13, 0.15) 20px)', texto: '#1e293b', tipo: 'patron' },
-    { id: 'c30', num: 30, nombre: 'Rayas Borgoña/Cyan', borde: '#4c0519', fondo: 'repeating-linear-gradient(45deg, rgba(136, 19, 55, 0.15), rgba(136, 19, 55, 0.15) 10px, rgba(2, 132, 199, 0.15) 10px, rgba(2, 132, 199, 0.15) 20px)', texto: '#4c0519', tipo: 'patron' },
-    { id: 'c31', num: 31, nombre: 'Líneas Horizontales Azul', borde: '#1d4ed8', fondo: 'repeating-linear-gradient(0deg, rgba(37, 99, 235, 0.08), rgba(37, 99, 235, 0.08) 8px, rgba(255, 255, 255, 0.6) 8px, rgba(255, 255, 255, 0.6) 16px)', texto: '#1e40af', tipo: 'patron' },
-    { id: 'c32', num: 32, nombre: 'Líneas Horizontales Rojo', borde: '#b91c1c', fondo: 'repeating-linear-gradient(0deg, rgba(220, 38, 38, 0.08), rgba(220, 38, 38, 0.08) 8px, rgba(255, 255, 255, 0.6) 8px, rgba(255, 255, 255, 0.6) 16px)', texto: '#991b1b', tipo: 'patron' },
-    { id: 'c33', num: 33, nombre: 'Líneas Verticales Verde', borde: '#15803d', fondo: 'repeating-linear-gradient(90deg, rgba(22, 163, 74, 0.08), rgba(22, 163, 74, 0.08) 8px, rgba(255, 255, 255, 0.6) 8px, rgba(255, 255, 255, 0.6) 16px)', texto: '#166534', tipo: 'patron' },
-    { id: 'c34', num: 34, nombre: 'Líneas Verticales Oro', borde: '#b45309', fondo: 'repeating-linear-gradient(90deg, rgba(217, 119, 6, 0.1), rgba(217, 119, 6, 0.1) 8px, rgba(255, 255, 255, 0.6) 8px, rgba(255, 255, 255, 0.6) 16px)', texto: '#92400e', tipo: 'patron' },
-    { id: 'c35', num: 35, nombre: 'Líneas Verticales Morado', borde: '#7e22ce', fondo: 'repeating-linear-gradient(90deg, rgba(147, 51, 234, 0.08), rgba(147, 51, 234, 0.08) 8px, rgba(255, 255, 255, 0.6) 8px, rgba(255, 255, 255, 0.6) 16px)', texto: '#6b21a8', tipo: 'patron' },
-    { id: 'c36', num: 36, nombre: 'Líneas Verticales Marrón', borde: '#78350f', fondo: 'repeating-linear-gradient(90deg, rgba(120, 53, 15, 0.09), rgba(120, 53, 15, 0.09) 8px, rgba(255, 255, 255, 0.6) 8px, rgba(255, 255, 255, 0.6) 16px)', texto: '#451a03', tipo: 'patron' }
+    { id: 'c1', num: 1, nombre: 'Rojo', borde: '#dc2626', fondo: '#fee2e2', texto: '#991b1b', tipo: 'sólido' },
+    { id: 'c2', num: 2, nombre: 'Azul', borde: '#2563eb', fondo: '#dbeafe', texto: '#1e40af', tipo: 'sólido' },
+    { id: 'c3', num: 3, nombre: 'Amarillo', borde: '#d97706', fondo: '#fef3c7', texto: '#92400e', tipo: 'sólido' },
+    { id: 'c4', num: 4, nombre: 'Verde', borde: '#16a34a', fondo: '#dcfce7', texto: '#166534', tipo: 'sólido' },
+    { id: 'c5', num: 5, nombre: 'Naranja', borde: '#ea580c', fondo: '#ffedd5', texto: '#9a3412', tipo: 'sólido' },
+    { id: 'c6', num: 6, nombre: 'Morado', borde: '#9333ea', fondo: '#f3e8ff', texto: '#6b21a8', tipo: 'sólido' },
+    { id: 'c7', num: 7, nombre: 'Magenta', borde: '#db2777', fondo: '#fce7f3', texto: '#9d174d', tipo: 'sólido' },
+    { id: 'c8', num: 8, nombre: 'Turquesa', borde: '#0d9488', fondo: '#ccfbf1', texto: '#115e59', tipo: 'sólido' },
+    { id: 'c9', num: 9, nombre: 'Marrón Tierra', borde: '#78350f', fondo: '#fef3c7', texto: '#451a03', tipo: 'sólido' },
+    { id: 'c10', num: 10, nombre: 'Pizarra', borde: '#475569', fondo: '#f1f5f9', texto: '#1e293b', tipo: 'sólido' },
+    { id: 'c11', num: 11, nombre: 'Lima', borde: '#65a30d', fondo: '#ecfccb', texto: '#3f6212', tipo: 'sólido' },
+    { id: 'c12', num: 12, nombre: 'Borgoña', borde: '#881337', fondo: '#ffe4e6', texto: '#4c0519', tipo: 'sólido' },
+    { id: 'c13', num: 13, nombre: 'Rosa Coral', borde: '#e11d48', fondo: '#ffe4e6', texto: '#881337', tipo: 'sólido' },
+    { id: 'c14', num: 14, nombre: 'Cian Profundo', borde: '#0284c7', fondo: '#e0f2fe', texto: '#0369a1', tipo: 'sólido' },
+    { id: 'c15', num: 15, nombre: 'Ámbar Claro', borde: '#ca8a04', fondo: '#fef9c3', texto: '#713f12', tipo: 'sólido' },
+    { id: 'c16', num: 16, nombre: 'Esmeralda', borde: '#059669', fondo: '#d1fae5', texto: '#065f46', tipo: 'sólido' },
+    { id: 'c17', num: 17, nombre: 'Teja', borde: '#c2410c', fondo: '#ffedd5', texto: '#7c2d12', tipo: 'sólido' },
+    { id: 'c18', num: 18, nombre: 'Violeta', borde: '#7c3aed', fondo: '#ede9fe', texto: '#5b21b6', tipo: 'sólido' },
+    { id: 'c19', num: 19, nombre: 'Rosa Fucsia', borde: '#c026d3', fondo: 'fae8ff', texto: '#86198f', tipo: 'sólido' },
+    { id: 'c20', num: 20, nombre: 'Azul Acero', borde: '#2563eb', fondo: '#dbeafe', texto: '#1d4ed8', tipo: 'sólido' },
+    { id: 'c21', num: 21, nombre: 'Chocolate', borde: '#57534e', fondo: '#e7e5e4', texto: '#292524', tipo: 'sólido' },
+    { id: 'c22', num: 22, nombre: 'Índigo', borde: '#4f46e5', fondo: '#e0e7ff', texto: '#3730a3', tipo: 'sólido' },
+    { id: 'c23', num: 23, nombre: 'Oliva', borde: '#4d7c0f', fondo: '#ecfccb', texto: '#365314', tipo: 'sólido' },
+    { id: 'c24', num: 24, nombre: 'Frambuesa', borde: '#9f1239', fondo: '#ffe4e6', texto: '#4c0519', tipo: 'sólido' },
+    { id: 'c25', num: 25, nombre: 'Rayas Rojo/Azul', borde: '#1e3a8a', fondo: 'repeating-linear-gradient(45deg, #fee2e2, #fee2e2 10px, #dbeafe 10px, #dbeafe 20px)', texto: '#1e3a8a', tipo: 'patron' },
+    { id: 'c26', num: 26, nombre: 'Rayas Verde/Oro', borde: '#166534', fondo: 'repeating-linear-gradient(45deg, #dcfce7, #dcfce7 10px, #fef3c7 10px, #fef3c7 20px)', texto: '#166534', tipo: 'patron' },
+    { id: 'c27', num: 27, nombre: 'Rayas Morado/Rosa', borde: '#6b21a8', fondo: 'repeating-linear-gradient(45deg, #f3e8ff, #f3e8ff 10px, #fce7f3 10px, #fce7f3 20px)', texto: '#6b21a8', tipo: 'patron' },
+    { id: 'c28', num: 28, nombre: 'Rayas Naranja/Teal', borde: '#9a3412', fondo: 'repeating-linear-gradient(45deg, #ffedd5, #ffedd5 10px, #ccfbf1 10px, #ccfbf1 20px)', texto: '#9a3412', tipo: 'patron' },
+    { id: 'c29', num: 29, nombre: 'Rayas Pizarra/Lima', borde: '#1e293b', fondo: 'repeating-linear-gradient(45deg, #f1f5f9, #f1f5f9 10px, #ecfccb 10px, #ecfccb 20px)', texto: '#1e293b', tipo: 'patron' },
+    { id: 'c30', num: 30, nombre: 'Rayas Borgoña/Cyan', borde: '#4c0519', fondo: 'repeating-linear-gradient(45deg, #ffe4e6, #ffe4e6 10px, #e0f2fe 10px, #e0f2fe 20px)', texto: '#4c0519', tipo: 'patron' },
+    { id: 'c31', num: 31, nombre: 'Líneas Horizontales Azul', borde: '#1d4ed8', fondo: 'repeating-linear-gradient(0deg, #dbeafe, #dbeafe 8px, #ffffff 8px, #ffffff 16px)', texto: '#1e40af', tipo: 'patron' },
+    { id: 'c32', num: 32, nombre: 'Líneas Horizontales Rojo', borde: '#b91c1c', fondo: 'repeating-linear-gradient(0deg, #fee2e2, #fee2e2 8px, #ffffff 8px, #ffffff 16px)', texto: '#991b1b', tipo: 'patron' },
+    { id: 'c33', num: 33, nombre: 'Líneas Verticales Verde', borde: '#15803d', fondo: 'repeating-linear-gradient(90deg, #dcfce7, #dcfce7 8px, #ffffff 8px, #ffffff 16px)', texto: '#166534', tipo: 'patron' },
+    { id: 'c34', num: 34, nombre: 'Líneas Verticales Oro', borde: '#b45309', fondo: 'repeating-linear-gradient(90deg, #fef3c7, #fef3c7 8px, #ffffff 8px, #ffffff 16px)', texto: '#92400e', tipo: 'patron' },
+    { id: 'c35', num: 35, nombre: 'Líneas Verticales Morado', borde: '#7e22ce', fondo: 'repeating-linear-gradient(90deg, #f3e8ff, #f3e8ff 8px, #ffffff 8px, #ffffff 16px)', texto: '#6b21a8', tipo: 'patron' },
+    { id: 'c36', num: 36, nombre: 'Líneas Verticales Marrón', borde: '#78350f', fondo: 'repeating-linear-gradient(90deg, #fef3c7, #fef3c7 8px, #ffffff 8px, #ffffff 16px)', texto: '#451a03', tipo: 'patron' }
 ];
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -209,55 +209,30 @@ function obtenerInfoBanderasYTexto(persona) {
     return { htmlBanderas: '', textoTag: '' };
 }
 
-function poblarSelectoresParejasHijosAdmin(parejasSeleccionadas = [], hijosSeleccionados = []) {
-    const contenedorParejas = document.getElementById("contenedor-check-parejas");
-    const contenedorHijos = document.getElementById("contenedor-check-hijos");
-    if (!contenedorParejas || !contenedorHijos) return;
-
-    contenedorParejas.innerHTML = "";
-    contenedorHijos.innerHTML = "";
-
-    const personasOrdenadas = [...listaPersonas].sort((a, b) => {
-        const nombreA = `${a.nombre} ${a.apellido || ''}`.toLowerCase();
-        const nombreB = `${b.nombre} ${b.apellido || ''}`.toLowerCase();
-        return nombreA.localeCompare(nombreB);
-    });
-
-    if (personasOrdenadas.length === 0) {
-        contenedorParejas.innerHTML = "<span style='font-size:0.8rem; color:#777; padding:4px;'>No hay familiares registrados aún.</span>";
-        contenedorHijos.innerHTML = "<span style='font-size:0.8rem; color:#777; padding:4px;'>No hay familiares registrados aún.</span>";
-        return;
+function obtenerObjetoColorPorIdOPersonalizado(colorId) {
+    // Si el colorId empieza con '#' es un color personalizado libre elegido por el usuario
+    if (colorId && colorId.startsWith('#')) {
+        return {
+            id: colorId,
+            num: 'Custom',
+            nombre: 'Personalizado',
+            borde: colorId,
+            fondo: colorId + '25', // Añade transparencia suave
+            texto: '#111827',
+            tipo: 'sólido'
+        };
     }
-
-    personasOrdenadas.forEach(p => {
-        const nombreCompleto = `${p.nombre} ${p.apellido || ''}`.trim();
-        const idEditando = document.getElementById("edit-id").value;
-        if (idEditando && p.id === idEditando) return;
-
-        const isParejaChecked = parejasSeleccionadas.includes(nombreCompleto);
-        const divP = document.createElement("label");
-        divP.className = "checkbox-item-label";
-        divP.innerHTML = `<input type="checkbox" name="check-pareja" value="${nombreCompleto}" ${isParejaChecked ? 'checked' : ''}> ${nombreCompleto} (${p.generacion} - ${p.sexo})`;
-        contenedorParejas.appendChild(divP);
-
-        const isHijoChecked = hijosSeleccionados.includes(nombreCompleto);
-        const divH = document.createElement("label");
-        divH.className = "checkbox-item-label";
-        divH.innerHTML = `<input type="checkbox" name="check-hijo" value="${nombreCompleto}" ${isHijoChecked ? 'checked' : ''}> ${nombreCompleto} (${p.generacion} - ${p.sexo})`;
-        contenedorHijos.appendChild(divH);
-    });
+    return PALETA_COLORES.find(c => c.id === colorId) || null;
 }
 
 function obtenerEstiloPersona(persona) {
     const nombreCompleto = `${persona.nombre} ${persona.apellido || ''}`.trim();
 
-    // 1. Verificar si es un varón de primera generación (Cabezas de familia / fundadores sin padres registrados)
     const tienePadreRegistrado = listaPersonas.some(p => p.hijos && p.hijos.includes(nombreCompleto));
     if (persona.sexo === 'M' && !tienePadreRegistrado) {
         return { tipo: 'neutro', colorNombre: '#1d4ed8' };
     }
 
-    // 2. Identificar estrictamente a los padres biológicos directos de esta persona
     const padreBiologico = listaPersonas.find(p => p.sexo === 'M' && p.hijos && p.hijos.includes(nombreCompleto));
     const madreBiologica = listaPersonas.find(p => p.sexo === 'F' && p.hijos && p.hijos.includes(nombreCompleto));
 
@@ -265,19 +240,17 @@ function obtenerEstiloPersona(persona) {
     if (padreBiologico && madreBiologica) {
         const nombrePadre = `${padreBiologico.nombre} ${padreBiologico.apellido || ''}`.trim();
         const nombreMadre = `${madreBiologica.nombre} ${madreBiologica.apellido || ''}`.trim();
-        // Buscar la rama específica creada exactamente por ESTA pareja de padres
         const ramaEspecifica = listaRamas.find(r => r.hombre === nombrePadre && r.mujer === nombreMadre);
         if (ramaEspecifica) {
-            colorHeredadoObj = PALETA_COLORES.find(c => c.id === ramaEspecifica.colorId);
+            colorHeredadoObj = obtenerObjetoColorPorIdOPersonalizado(ramaEspecifica.colorId);
         }
     }
 
-    // Si no se encontró por pareja exacta, buscar por la madre biológica o linaje previo
     if (!colorHeredadoObj && madreBiologica) {
-        const nombreMadre = `${madreBiologica.nombre} ${madreBiologica.apellido || ''}`.trim();
+        const nombreMadre = `${madreBiologica.nombre} ${madreBiological.apellido || ''}`.trim();
         const ramaMadre = listaRamas.find(r => r.mujer === nombreMadre);
         if (ramaMadre) {
-            colorHeredadoObj = PALETA_COLORES.find(c => c.id === ramaMadre.colorId);
+            colorHeredadoObj = obtenerObjetoColorPorIdOPersonalizado(ramaMadre.colorId);
         } else {
             const estiloMadre = obtenerEstiloPersona(madreBiologica);
             if (estiloMadre.tipo === 'unico' || estiloMadre.tipo === '50-50') {
@@ -286,14 +259,12 @@ function obtenerEstiloPersona(persona) {
         }
     }
 
-    // 3. Buscar si la persona misma formó una rama propia con su propia pareja
     const ramasDirectas = listaRamas.filter(r => r.mujer === nombreCompleto || r.hombre === nombreCompleto);
     let colorPropioObj = null;
     if (ramasDirectas.length > 0) {
-        colorPropioObj = PALETA_COLORES.find(c => c.id === ramasDirectas[0].colorId);
+        colorPropioObj = obtenerObjetoColorPorIdOPersonalizado(ramasDirectas[0].colorId);
     }
 
-    // 4. SI TIENE HERENCIA Y ADEMÁS FORMA NUEVA RAMA -> Estilo 50/50 (Arriba origen, Abajo nueva rama)
     if (colorHeredadoObj && colorPropioObj && colorHeredadoObj.id !== colorPropioObj.id) {
         return {
             tipo: '50-50',
@@ -304,17 +275,14 @@ function obtenerEstiloPersona(persona) {
         };
     }
 
-    // 5. SI TIENE RAMA DIRECTA PROPIA
     if (colorPropioObj) {
         return { tipo: 'unico', color: colorPropioObj, etiqueta: `Color ${colorPropioObj.num} - ${colorPropioObj.nombre}`, colorNombre: colorPropioObj.texto };
     }
 
-    // 6. SI ES DESCENDIENTE HEREDA EL 100% DEL COLOR DE SU RAMA DE ORIGEN
     if (colorHeredadoObj) {
         return { tipo: 'unico', color: colorHeredadoObj, etiqueta: `Heredado: Color ${colorHeredadoObj.num} - ${colorHeredadoObj.nombre}`, colorNombre: colorHeredadoObj.texto };
     }
 
-    // 7. Por defecto neutro según sexo
     if (persona.sexo === 'M') {
         return { tipo: 'neutro', colorNombre: '#1d4ed8' };
     }
@@ -461,7 +429,6 @@ function renderizarArbol(personasAMostrar) {
                     colRama.appendChild(placeholder);
                 }
 
-                // VINCULACIÓN ESTRICTA Y EXCLUSIVA DE HIJOS POR MADRE:
                 const hijosDeRamaSet = new Set();
                 
                 if (parejaObj && parejaObj.hijos) {
@@ -586,6 +553,11 @@ function renderizarPaletaColores() {
     });
 }
 
+function seleccionarColorPersonalizado(hex) {
+    document.getElementById("rama-color-seleccionado").value = hex;
+    renderizarPaletaColores();
+}
+
 function crearAsignarRama() {
     const hombre = document.getElementById("rama-select-hombre").value;
     const mujer = document.getElementById("rama-select-mujer").value;
@@ -596,7 +568,7 @@ function crearAsignarRama() {
         return;
     }
     if (!colorId) {
-        alert("Por favor, selecciona un color disponible de la paleta.");
+        alert("Por favor, selecciona un color de la paleta o un color personalizado.");
         return;
     }
 
@@ -617,6 +589,19 @@ function eliminarRama(id) {
     }
 }
 
+function cambiarColorRama(idRama) {
+    const nuevaColorHex = prompt("Ingresa un color en formato HEX (ej. #3b82f6) o selecciona de la paleta haciendo clic en 'Gestionar':");
+    if (!nuevaColorHex) return;
+    
+    const rama = listaRamas.find(r => r.id === idRama);
+    if (rama) {
+        rama.colorId = nuevaColorHex.trim();
+        guardarEnMemoriaLocal();
+        refrescarTodo();
+        alert("¡Color de rama actualizado con éxito!");
+    }
+}
+
 function renderizarListaRamasActivas() {
     const contenedor = document.getElementById("lista-ramas-activas");
     document.getElementById("contador-ramas").innerText = listaRamas.length;
@@ -629,7 +614,7 @@ function renderizarListaRamasActivas() {
     }
 
     listaRamas.forEach(r => {
-        const colObj = PALETA_COLORES.find(c => c.id === r.colorId) || PALETA_COLORES[0];
+        const colObj = obtenerObjetoColorPorIdOPersonalizado(r.colorId) || PALETA_COLORES[0];
         const row = document.createElement("div");
         row.className = "rama-item-row";
         row.style.background = colObj.fondo;
@@ -640,7 +625,10 @@ function renderizarListaRamasActivas() {
                 <strong style="color:${colObj.texto};">Color ${colObj.num} (${colObj.nombre})</strong><br>
                 <span>👨 ${r.hombre} + 👩 <b>${r.mujer}</b></span>
             </div>
-            <button class="btn-eliminar-item" onclick="eliminarRama('${r.id}')">Liberar Color</button>
+            <div style="display: flex; gap: 6px;">
+                <button class="btn-editar-item" onclick="cambiarColorRama('${r.id}')" style="background:#e0f2fe; color:#0369a1; border:none; padding:5px 8px; border-radius:6px; cursor:pointer; font-weight:600;">Cambiar Color</button>
+                <button class="btn-eliminar-item" onclick="eliminarRama('${r.id}')" style="background:#fee2e2; color:#b91c1c; border:none; padding:5px 8px; border-radius:6px; cursor:pointer; font-weight:600;">Liberar</button>
+            </div>
         `;
         contenedor.appendChild(row);
     });
