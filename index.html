@@ -92,7 +92,13 @@
                     <div id="paleta-colores-grid" class="paleta-grid"></div>
                 </div>
 
-                <button type="button" class="btn-guardar" onclick="crearAsignarRama()" style="margin-top: 10px;">Asignar Color a Rama</button>
+                <!-- Selector de color personalizado estilo Excel -->
+                <div style="margin-top: 14px; display: flex; align-items: center; gap: 12px; background: #fdfcf8; padding: 10px; border-radius: 6px; border: 1px solid var(--border-antique);">
+                    <label style="font-size: 0.85rem; font-weight: 700; color: var(--primary-classic);">🎨 O elige un color personalizado (Estilo Excel):</label>
+                    <input type="color" id="picker-color-libre" onchange="seleccionarColorPersonalizado(this.value)" style="width: 45px; height: 32px; border: 1px solid var(--border-antique); border-radius: 4px; cursor: pointer; background: transparent;">
+                </div>
+
+                <button type="button" class="btn-guardar" onclick="crearAsignarRama()" style="margin-top: 14px;">Asignar Color a Rama</button>
             </div>
 
             <div class="ramas-panel-card">
