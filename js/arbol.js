@@ -298,16 +298,19 @@ function obtenerEstiloPersona(persona) {
             }
         }
     }
-     if (colorHeredadoObj && colorPropioObj && colorHeredadoObj.id !== colorPropioObj.id) {
+    if (colorHeredadoObj && colorPropioObj && colorHeredadoObj.id !== colorPropioObj.id) {
+        // Si alguno es un patrón, usamos su color de borde sólido para que el degradado 50/50 luzca impecable
+        const topFinal = colorHeredadoObj.tipo === 'patron' ? { ...colorHeredadoObj, fondo: colorHeredadoObj.borde } : colorHeredadoObj;
+        const bottomFinal = colorPropioObj.tipo === 'patron' ? { ...colorPropioObj, fondo: colorPropioObj.borde } : colorPropioObj;
+
         return {
             tipo: '50-50',
-            top: colorHeredadoObj,
-            bottom: colorPropioObj,
+            top: topFinal,
+            bottom: bottomFinal,
             etiqueta: `Color ${colorHeredadoObj.num} / Color ${colorPropioObj.num}`,
             colorNombre: colorHeredadoObj.texto
         };
-    }
-
+    } 
     if (colorPropioObj) {
         return { tipo: 'unico', color: colorPropioObj, etiqueta: `Color ${colorPropioObj.num} - ${colorPropioObj.nombre}`, colorNombre: colorPropioObj.texto };
     }
