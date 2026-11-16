@@ -180,28 +180,63 @@ function obtenerCodigoISO(pais) {
 }
 
 function obtenerInfoBanderasYTexto(persona) {
+    const paisesSet = new Set();
+    const textosPaises = [];
+
+    // 1. País propio de la persona
     const paisPropio = (persona.nacionalidad || '').trim();
     if (paisPropio !== '') {
-        // Si hay una barra '/', significa doble nacionalidad (ej: "EEUU / Alemania")
-        if (paisPropio.includes('/')) {
-            const partes = paisPropio.split('/').map(p => p.trim());
-            let htmlBanderas = '<div class="banderas-contenedor-der">';
-            partes.forEach(p => {
-                const iso = obtenerCodigoISO(p);
-                if (iso) {
-                    htmlBanderas += `<img src="https://flagcdn.com/w40/${iso}.png" alt="${p}" title="${p}" class="bandera-doble-item">`;
-                }
-            });
-            htmlBanderas += '</div>';
-            return { htmlBanderas, textoTag: paisPropio };
-        }
-
-        const iso = obtenerCodigoISO(paisPropio);
-        const htmlBanderas = iso 
-            ? `<div class="banderas-contenedor-der"><img src="https://flagcdn.com/w40/${iso}.png" alt="${paisPropio}" title="${paisPropio}" class="bandera-header"></div>` 
-            : '';
-        return { htmlBanderas, textoTag: paisPropio };
+        paisPropio.split('/').forEach(p => {
+            const limpio = p.trim();
+            if (limpio) {
+                paisesSet.add(limpio);
+                textosPaises.push(limpio);
+            }
+        });
     }
+
+    // 2. Buscar padres biológicos para heredar sus nacionalidades hacia abajo
+    const nombreCompleto = `${persona.nombre} ${persona.apellido || ''}`.trim();
+    const padre = listaPersonas.find(p => p.sexo === 'M' && p.hijos && p.hijos.includes(nombreCompleto));
+    const madre = listaPersonas.find(p => p.sexo === 'F' && p.hijos && p.hijos.includes(nombreCompleto));
+
+    if (padre && (padre.nacionalidad || '').trim() !== '') {
+        padre.nacionalidad.split('/').forEach(p => {
+            const limpio = p.trim();
+            if (limpio && !paisesSet.has(limpio)) {
+                paisesSet.add(limpio);
+                textosPaises.push(limpio);
+            }
+        });
+    }
+
+    if (madre && (madre.nacionalidad || '').trim() !== '') {
+        madre.nacionalidad.split('/').forEach(p => {
+            const limpio = p.trim();
+            if (limpio && !paisesSet.has(limpio)) {
+                paisesSet.add(limpio);
+                textosPaises.push(limpio);
+            }
+        });
+    }
+
+    if (paisesSet.size === 0) {
+        return { htmlBanderas: '', textoTag: '' };
+    }
+
+    // Generar las banderas acumuladas verticalmente
+    let htmlBanderas = '<div class="banderas-contenedor-der">';
+    paisesSet.forEach(pais => {
+        const iso = obtenerCodigoISO(pais);
+        if (iso) {
+            htmlBanderas += `<img src="https://flagcdn.com/w40/${iso}.png" alt="${pais}" title="${pais}" class="bandera-doble-item">`;
+        }
+    });
+    htmlBanderas += '</div>';
+
+    const textoTag = textosPaises.join(' / ');
+    return { htmlBanderas, textoTag };
+}
 
     const nombreCompleto = `${persona.nombre} ${persona.apellido || ''}`.trim();
     const padre = listaPersonas.find(p => p.sexo === 'M' && p.hijos && p.hijos.includes(nombreCompleto));
