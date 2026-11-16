@@ -1,7 +1,6 @@
 let listaPersonas = [];
 let listaRamas = [];
 
-// Paleta de colores con 12 tonos diferenciados
 const PALETA_COLORES = [
     { id: 'c1', num: 1, nombre: 'Rojo', borde: '#dc2626', fondo: 'rgba(220, 38, 38, 0.14)', texto: '#991b1b' },
     { id: 'c2', num: 2, nombre: 'Azul', borde: '#2563eb', fondo: 'rgba(37, 99, 235, 0.14)', texto: '#1e40af' },
@@ -24,7 +23,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function cargarDatos() {
     try {
-        // 1. Intentar cargar primero desde la memoria del navegador (localStorage) para no perder nada
         const guardadoLocal = localStorage.getItem('familia_datos_privados');
         if (guardadoLocal) {
             const datosLocales = JSON.parse(guardadoLocal);
@@ -34,7 +32,6 @@ async function cargarDatos() {
             return;
         }
 
-        // 2. Si no hay nada en el navegador, cargar desde el archivo JSON del repositorio
         const respuesta = await fetch('data/familia.json');
         const datos = await respuesta.json();
         listaPersonas = datos.personas || [];
@@ -47,7 +44,6 @@ async function cargarDatos() {
     }
 }
 
-// Guardar automáticamente en el navegador
 function guardarEnMemoriaLocal() {
     const datosActuales = { personas: listaPersonas, ramas: listaRamas };
     localStorage.setItem('familia_datos_privados', JSON.stringify(datosActuales));
@@ -56,6 +52,7 @@ function guardarEnMemoriaLocal() {
 function refrescarTodo() {
     poblarSelectoresCabezas();
     poblarSelectoresRamas();
+    poblarSelectoresParejasHijosAdmin();
     renderizarPaletaColores();
     renderizarListaRamasActivas();
     renderizarArbol(listaPersonas);
@@ -63,7 +60,6 @@ function refrescarTodo() {
     actualizarListaAdmin();
 }
 
-// Control de Pestañas
 function cambiarPestana(pestana) {
     const tabs = ['arbol', 'columnas', 'ramas', 'admin'];
     tabs.forEach(t => {
@@ -81,10 +77,53 @@ function cambiarPestana(pestana) {
         renderizarPaletaColores();
         renderizarListaRamasActivas();
     }
+    if (pestana === 'admin') {
+        poblarSelectoresParejasHijosAdmin();
+    }
 }
 
 function calcularEdad(anioNacimiento) {
     return new Date().getFullYear() - anioNacimiento;
+}
+
+function poblarSelectoresParejasHijosAdmin(parejasSeleccionadas = [], hijosSeleccionados = []) {
+    const contenedorParejas = document.getElementById("contenedor-check-parejas");
+    const contenedorHijos = document.getElementById("contenedor-check-hijos");
+    if (!contenedorParejas || !contenedorHijos) return;
+
+    contenedorParejas.innerHTML = "";
+    contenedorHijos.innerHTML = "";
+
+    const personasOrdenadas = [...listaPersonas].sort((a, b) => {
+        const nombreA = `${a.nombre} ${a.apellido || ''}`.toLowerCase();
+        const nombreB = `${b.nombre} ${b.apellido || ''}`.toLowerCase();
+        return nombreA.localeCompare(nombreB);
+    });
+
+    if (personasOrdenadas.length === 0) {
+        contenedorParejas.innerHTML = "<span style='font-size:0.8rem; color:#777; padding:4px;'>No hay familiares registrados aún.</span>";
+        contenedorHijos.innerHTML = "<span style='font-size:0.8rem; color:#777; padding:4px;'>No hay familiares registrados aún.</span>";
+        return;
+    }
+
+    personasOrdenadas.forEach(p => {
+        const nombreCompleto = `${p.nombre} ${p.apellido || ''}`.trim();
+        const idEditando = document.getElementById("edit-id").value;
+        const esElMismo = idEditando && p.id === idEditando;
+        if (esElMismo) return;
+
+        const isParejaChecked = parejasSeleccionadas.includes(nombreCompleto);
+        const divP = document.createElement("label");
+        divP.className = "checkbox-item-label";
+        divP.innerHTML = `<input type="checkbox" name="check-pareja" value="${nombreCompleto}" ${isParejaChecked ? 'checked' : ''}> ${nombreCompleto} (${p.generacion} - ${p.sexo})`;
+        contenedorParejas.appendChild(divP);
+
+        const isHijoChecked = hijosSeleccionados.includes(nombreCompleto);
+        const divH = document.createElement("label");
+        divH.className = "checkbox-item-label";
+        divH.innerHTML = `<input type="checkbox" name="check-hijo" value="${nombreCompleto}" ${isHijoChecked ? 'checked' : ''}> ${nombreCompleto} (${p.generacion} - ${p.sexo})`;
+        contenedorHijos.appendChild(divH);
+    });
 }
 
 function obtenerEstiloPersona(persona) {
@@ -436,10 +475,10 @@ function guardarFamiliar(event) {
     const anioNacimiento = parseInt(document.getElementById("inp-anio").value);
     const nacionalidad = document.getElementById("inp-nacionalidad").value.trim();
     
-    const parejas = document.getElementById("inp-parejas").value.split(',').map(s => s.trim()).filter(Boolean);
-    const hijos = document.getElementById("inp-hijos").value.split(',').map(s => s.trim()).filter(Boolean);
-    const id = editId ? editId : `${nombre.toLowerCase()}_${apellido.toLowerCase()}`.replace(/\s+/g, '_');
+    const parejas = Array.from(document.querySelectorAll('input[name="check-pareja"]:checked')).map(el => el.value);
+    const hijos = Array.from(document.querySelectorAll('input[name="check-hijo"]:checked')).map(el => el.value);
 
+    const id = editId ? editId : `${nombre.toLowerCase()}_${apellido.toLowerCase()}`.replace(/\s+/g, '_');
     const objetoFamiliar = { id, nombre, apellido, generacion, sexo, anioNacimiento, nacionalidad, parejas, hijos };
 
     if (editId) {
@@ -486,8 +525,8 @@ function cargarParaEditar(id) {
     document.getElementById("inp-sexo").value = p.sexo;
     document.getElementById("inp-anio").value = p.anioNacimiento;
     document.getElementById("inp-nacionalidad").value = p.nacionalidad || '';
-    document.getElementById("inp-parejas").value = p.parejas ? p.parejas.join(', ') : '';
-    document.getElementById("inp-hijos").value = p.hijos ? p.hijos.join(', ') : '';
+    
+    poblarSelectoresParejasHijosAdmin(p.parejas || [], p.hijos || []);
     document.getElementById("titulo-formulario").innerText = `Editando a: ${p.nombre} ${p.apellido || ''}`;
 }
 
@@ -503,6 +542,7 @@ function limpiarFormulario() {
     document.getElementById("form-familiar").reset();
     document.getElementById("edit-id").value = "";
     document.getElementById("titulo-formulario").innerText = "Registrar / Editar Familiar";
+    poblarSelectoresParejasHijosAdmin();
 }
 
 function exportarJSON() {
