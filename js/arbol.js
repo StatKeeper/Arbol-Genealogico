@@ -261,7 +261,7 @@ function obtenerEstiloPersona(persona) {
     const madreBiologica = listaPersonas.find(p => p.sexo === 'F' && p.hijos && p.hijos.includes(nombreCompleto));
     let colorHeredadoObj = null;
     if (madreBiologica) {
-        const nombreMadre = `${madreBiologica.nombre} ${madreBiological.apellido || ''}`.trim();
+        const nombreMadre = `${madreBiologica.nombre} ${madreBiologica.apellido || ''}`.trim();
         const ramaMadre = listaRamas.find(r => r.mujer === nombreMadre);
         if (ramaMadre) {
             colorHeredadoObj = PALETA_COLORES.find(c => c.id === ramaMadre.colorId);
@@ -296,7 +296,7 @@ function obtenerEstiloPersona(persona) {
         return { tipo: 'unico', color: colorPropioObj, etiqueta: `Color ${colorPropioObj.num} - ${colorPropioObj.nombre}`, colorNombre: colorPropioObj.texto };
     }
 
-    // 6. SI ES DESCENDIENTE (hijo/hija de 2da generación en adelante) HEREDA EL 100% DEL COLOR DE SU RAMA DE ORIGEN
+    // 6. SI ES DESCENDIENTE HEREDA EL 100% DEL COLOR DE SU RAMA DE ORIGEN
     if (colorHeredadoObj) {
         return { tipo: 'unico', color: colorHeredadoObj, etiqueta: `Heredado: Color ${colorHeredadoObj.num} - ${colorHeredadoObj.nombre}`, colorNombre: colorHeredadoObj.texto };
     }
