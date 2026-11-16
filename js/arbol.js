@@ -86,220 +86,58 @@ function calcularEdad(anioNacimiento) {
     return new Date().getFullYear() - anioNacimiento;
 }
 
-// Catálogo mundial completo de países y gentilicios
 function obtenerCodigoISO(pais) {
     if (!pais) return null;
     const limpio = pais.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
     const codigos = {
-        // América
-        'antigua y barbuda': 'ag',
-        'argentina': 'ar', 'argentino': 'ar',
-        'bahamas': 'bs', 'bahameno': 'bs',
-        'barbados': 'bb', 'barbadense': 'bb',
-        'belice': 'bz', 'beliceno': 'bz',
-        'bolivia': 'bo', 'boliviano': 'bo', 'boliviana': 'bo',
-        'brasil': 'br', 'brazil': 'br', 'brasileno': 'br', 'brasilena': 'br',
-        'canada': 'ca', 'canadiense': 'ca',
-        'chile': 'cl', 'chileno': 'cl', 'chilena': 'cl',
-        'colombia': 'co', 'colombiano': 'co', 'colombiana': 'co',
-        'costa rica': 'cr', 'costarricense': 'cr',
-        'cuba': 'cu', 'cubano': 'cu', 'cubana': 'cu',
-        'dominica': 'dm',
-        'ecuador': 'ec', 'ecuatoriano': 'ec', 'ecuatoriana': 'ec',
-        'el salvador': 'sv', 'salvadoreno': 'sv', 'salvadorena': 'sv',
-        'estados unidos': 'us', 'eeuu': 'us', 'ee.uu.': 'us', 'usa': 'us', 'estadounidense': 'us', 'americano': 'us',
-        'granada': 'gd',
-        'guatemala': 'gt', 'guatemalteco': 'gt', 'guatemalteca': 'gt',
-        'guyana': 'gy', 'guyanes': 'gy',
-        'haiti': 'ht', 'haitiano': 'ht', 'haitiana': 'ht',
-        'honduras': 'hn', 'hondureno': 'hn', 'hondurena': 'hn',
-        'jamaica': 'jm', 'jamaiquino': 'jm', 'jamaiquina': 'jm',
-        'mexico': 'mx', 'mejico': 'mx', 'mexicano': 'mx', 'mexicana': 'mx',
-        'nicaragua': 'ni', 'nicaraguense': 'ni',
-        'panama': 'pa', 'panameno': 'pa', 'panamena': 'pa',
-        'paraguay': 'py', 'paraguayo': 'py', 'paraguaya': 'py',
-        'peru': 'pe', 'peruano': 'pe', 'peruana': 'pe',
-        'puerto rico': 'pr', 'puertorriqueno': 'pr',
-        'republica dominicana': 'do', 'dominicana': 'do', 'dominicano': 'do',
-        'san cristobal y nieves': 'kn',
-        'san vicente y las granadinas': 'vc',
-        'santa lucia': 'lc',
-        'surinam': 'sr',
-        'trinidad y tobago': 'tt',
-        'uruguay': 'uy', 'uruguayo': 'uy', 'uruguaya': 'uy',
-        'venezuela': 've', 'venezolano': 've', 'venezolana': 've',
-
-        // Europa
-        'albania': 'al', 'albanes': 'al',
-        'alemania': 'de', 'germany': 'de', 'aleman': 'de', 'alemana': 'de',
-        'andorra': 'ad', 'andorrano': 'ad',
-        'armenia': 'am', 'armenio': 'am',
-        'austria': 'at', 'austriaco': 'at', 'austriaca': 'at',
-        'azerbaiyan': 'az',
-        'belgica': 'be', 'belga': 'be',
-        'bielorrusia': 'by', 'bielorruso': 'by',
-        'bosnia y herzegovina': 'ba', 'bosnia': 'ba',
-        'bulgaria': 'bg', 'bulgaro': 'bg', 'bulgara': 'bg',
-        'chipre': 'cy', 'chipriota': 'cy',
-        'croacia': 'hr', 'croata': 'hr',
-        'dinamarca': 'dk', 'danes': 'dk', 'danesa': 'dk',
-        'escocia': 'gb-sct', 'escoces': 'gb-sct',
-        'eslovaquia': 'sk', 'eslovaco': 'sk',
-        'eslovenia': 'si', 'esloveno': 'si',
-        'espana': 'es', 'spain': 'es', 'espanol': 'es', 'espanola': 'es',
-        'estonia': 'ee', 'estonio': 'ee',
-        'finlandia': 'fi', 'finlandes': 'fi', 'finlandesa': 'fi',
-        'francia': 'fr', 'france': 'fr', 'frances': 'fr', 'francesa': 'fr',
-        'gales': 'gb-wls', 'galesa': 'gb-wls',
-        'georgia': 'ge', 'georgiano': 'ge',
-        'grecia': 'gr', 'griego': 'gr', 'griega': 'gr',
-        'holanda': 'nl', 'paises bajos': 'nl', 'holandes': 'nl', 'neerlandes': 'nl',
-        'hungria': 'hu', 'hungaro': 'hu', 'hungara': 'hu',
-        'irlanda': 'ie', 'irlandes': 'ie', 'irlandesa': 'ie',
-        'islandia': 'is', 'islandes': 'is',
-        'italia': 'it', 'italy': 'it', 'italiano': 'it', 'italiana': 'it',
-        'kosovo': 'xk',
-        'letonia': 'lv', 'leton': 'lv',
-        'liechtenstein': 'li',
-        'lituania': 'lt', 'lituano': 'lt',
-        'luxemburgo': 'lu', 'luxemburgues': 'lu',
-        'macedonia del norte': 'mk', 'macedonia': 'mk',
-        'malta': 'mt', 'maltes': 'mt',
-        'moldavia': 'md', 'moldavo': 'md',
-        'monaco': 'mc', 'monegasco': 'mc',
-        'montenegro': 'me', 'montenegrino': 'me',
-        'noruega': 'no', 'noruego': 'no', 'noruega': 'no',
-        'polonia': 'pl', 'polaco': 'pl', 'polaca': 'pl',
-        'portugal': 'pt', 'portugues': 'pt', 'portuguesa': 'pt',
-        'reino unido': 'gb', 'inglaterra': 'gb', 'uk': 'gb', 'ingles': 'gb', 'inglesa': 'gb', 'britanico': 'gb',
-        'republica checa': 'cz', 'chequia': 'cz', 'checo': 'cz',
-        'rumania': 'ro', 'rumano': 'ro', 'rumana': 'ro',
-        'rusia': 'ru', 'ruso': 'ru', 'rusa': 'ru',
-        'san marino': 'sm',
-        'serbia': 'rs', 'serbio': 'rs',
-        'suecia': 'se', 'sueco': 'se', 'sueca': 'se',
-        'suiza': 'ch', 'suizo': 'ch',
-        'ucrania': 'ua', 'ucraniano': 'ua', 'ucraniana': 'ua',
-        'vaticano': 'va',
-
-        // África
-        'angola': 'ao', 'angoleno': 'ao',
-        'argelia': 'dz', 'argelino': 'dz',
-        'benin': 'bj',
-        'botsuana': 'bw',
-        'burkina faso': 'bf',
-        'burundi': 'bi',
-        'cabo verde': 'cv',
-        'camerun': 'cm', 'cameroon': 'cm', 'camerunes': 'cm', 'camerunesa': 'cm',
-        'chad': 'td', 'chadiano': 'td',
-        'comoras': 'km',
-        'congo': 'cg', 'republica del congo': 'cg', 'congoleno': 'cg',
-        'republica democratica del congo': 'cd', 'rd congo': 'cd',
-        'costa de marfil': 'ci', 'marfileno': 'ci',
-        'egipto': 'eg', 'egipcio': 'eg', 'egipcia': 'eg',
-        'eritrea': 'er',
-        'etiopia': 'et', 'etiope': 'et',
-        'gabon': 'ga', 'gabones': 'ga',
-        'gambia': 'gm', 'gambiano': 'gm',
-        'ghana': 'gh', 'ghanes': 'gh', 'ghanesa': 'gh',
-        'guinea': 'gn', 'guineano': 'gn',
-        'guinea ecuatorial': 'gq', 'ecuatoguineano': 'gq',
-        'guinea-bisau': 'gw',
-        'kenia': 'ke', 'keniata': 'ke',
-        'lesoto': 'ls',
-        'liberia': 'lr', 'liberiano': 'lr',
-        'libia': 'ly', 'libio': 'ly',
-        'madagascar': 'mg', 'malgache': 'mg',
-        'malaui': 'mw',
-        'mali': 'ml', 'maliense': 'ml',
-        'marruecos': 'ma', 'marroqui': 'ma',
-        'mauricio': 'mu',
-        'mauritania': 'mr', 'mauritano': 'mr',
-        'mozambique': 'mz', 'mozambiqueno': 'mz',
-        'namibia': 'na', 'namibio': 'na',
-        'niger': 'ne', 'nigerino': 'ne',
-        'nigeria': 'ng', 'nigeriano': 'ng', 'nigeriana': 'ng',
-        'republica centroafricana': 'cf',
-        'ruanda': 'rw', 'ruandes': 'rw',
-        'santo tome y principe': 'st',
-        'senegal': 'sn', 'senegales': 'sn', 'senegalesa': 'sn',
-        'seychelles': 'sc',
-        'sierra leona': 'sl',
-        'somalia': 'so', 'somali': 'so',
-        'suazilandia': 'sz', 'esuatini': 'sz',
-        'sudafrica': 'za', 'sudafricano': 'za', 'sudafricana': 'za',
-        'sudan': 'sd', 'sudanes': 'sd',
-        'sudan del sur': 'ss',
-        'tanzania': 'tz', 'tanzano': 'tz',
-        'togo': 'tg', 'togoles': 'tg',
-        'tunez': 'tn', 'tunecino': 'tn',
-        'uganda': 'ug', 'ugandes': 'ug',
-        'yibuti': 'dj',
-        'zambia': 'zm', 'zambiano': 'zm',
-        'zimbabue': 'zw', 'zimbabuense': 'zw',
-
-        // Asia y Medio Oriente
-        'afganistan': 'af', 'afgano': 'af',
-        'arabia saudita': 'sa', 'arabia saudi': 'sa', 'saudi': 'sa',
-        'banglades': 'bd',
-        'barein': 'bh',
-        'birmania': 'mm', 'myanmar': 'mm',
-        'brunei': 'bn',
-        'butan': 'bt',
-        'camboya': 'kh', 'camboyano': 'kh',
-        'catar': 'qa', 'qatar': 'qa', 'catari': 'qa',
-        'china': 'cn', 'chino': 'cn',
-        'corea del norte': 'kp', 'norcoreano': 'kp',
-        'corea del sur': 'kr', 'corea': 'kr', 'coreano': 'kr', 'surcoreano': 'kr',
-        'emiratos arabes unidos': 'ae', 'emiratos arabes': 'ae', 'dubai': 'ae',
-        'filipinas': 'ph', 'filipino': 'ph', 'filipina': 'ph',
-        'india': 'in', 'indio': 'in', 'hindu': 'in',
-        'indonesia': 'id', 'indonesio': 'id',
-        'irak': 'iq', 'iraqui': 'iq',
-        'iran': 'ir', 'irani': 'ir',
-        'israel': 'il', 'israeli': 'il',
-        'japon': 'jp', 'japan': 'jp', 'japones': 'jp', 'japonesa': 'jp',
-        'jordania': 'jo', 'jordano': 'jo',
-        'kazajistan': 'kz',
-        'kirguistan': 'kg',
-        'kuwait': 'kw', 'kuwaiti': 'kw',
-        'laos': 'la',
-        'libano': 'lb', 'libanes': 'lb', 'libanesa': 'lb',
-        'malasia': 'my', 'malasio': 'my',
-        'maldivas': 'mv',
-        'mongolia': 'mn', 'mongol': 'mn',
-        'nepal': 'np', 'nepali': 'np',
-        'oman': 'om',
-        'pakistan': 'pk', 'pakistani': 'pk',
-        'palestina': 'ps', 'palestino': 'ps',
-        'singapur': 'sg', 'singapurense': 'sg',
-        'siria': 'sy', 'sirio': 'sy', 'siria': 'sy',
-        'sri lanka': 'lk',
-        'tailandia': 'th', 'tailandes': 'th', 'tailandesa': 'th',
-        'taiwan': 'tw', 'taiwanes': 'tw',
-        'tayikistan': 'tj',
-        'timor oriental': 'tl',
-        'turkmenistan': 'tm',
-        'turquia': 'tr', 'turco': 'tr', 'turca': 'tr',
-        'uzbekistan': 'uz',
-        'vietnam': 'vn', 'vietnamita': 'vn',
-        'yemen': 'ye', 'yemeni': 'ye',
-
-        // Oceanía
-        'australia': 'au', 'australiano': 'au', 'australiana': 'au',
-        'fiyi': 'fj', 'fiyiano': 'fj',
-        'islas marshall': 'mh',
-        'islas salomon': 'sb',
-        'kiribati': 'ki',
-        'micronesia': 'fm',
-        'nauru': 'nr',
-        'nueva zelanda': 'nz', 'neozelandes': 'nz', 'neozelandesa': 'nz',
-        'palaos': 'pw',
-        'papua nueva guinea': 'pg',
-        'samoa': 'ws', 'samoano': 'ws',
-        'tonga': 'to',
-        'tuvalu': 'tv',
-        'vanuatu': 'vu'
+        'antigua y barbuda': 'ag', 'argentina': 'ar', 'argentino': 'ar', 'bahamas': 'bs', 'bahameno': 'bs',
+        'barbados': 'bb', 'belice': 'bz', 'bolivia': 'bo', 'boliviano': 'bo', 'boliviana': 'bo',
+        'brasil': 'br', 'brazil': 'br', 'brasileno': 'br', 'brasilena': 'br', 'canada': 'ca', 'canadiense': 'ca',
+        'chile': 'cl', 'chileno': 'cl', 'chilena': 'cl', 'colombia': 'co', 'colombiano': 'co', 'colombiana': 'co',
+        'costa rica': 'cr', 'costarricense': 'cr', 'cuba': 'cu', 'cubano': 'cu', 'cubana': 'cu',
+        'dominica': 'dm', 'ecuador': 'ec', 'ecuatoriano': 'ec', 'ecuatoriana': 'ec',
+        'el salvador': 'sv', 'salvadoreno': 'sv', 'estados unidos': 'us', 'eeuu': 'us', 'ee.uu.': 'us', 'usa': 'us',
+        'granada': 'gd', 'guatemala': 'gt', 'guatemalteco': 'gt', 'guyana': 'gy', 'haiti': 'ht', 'haitiano': 'ht',
+        'honduras': 'hn', 'hondureno': 'hn', 'jamaica': 'jm', 'jamaiquino': 'jm',
+        'mexico': 'mx', 'mejico': 'mx', 'mexicano': 'mx', 'mexicana': 'mx', 'nicaragua': 'ni', 'nicaraguense': 'ni',
+        'panama': 'pa', 'panameno': 'pa', 'paraguay': 'py', 'paraguayo': 'py', 'peru': 'pe', 'peruano': 'pe', 'peruana': 'pe',
+        'puerto rico': 'pr', 'republica dominicana': 'do', 'dominicana': 'do', 'dominicano': 'do',
+        'uruguay': 'uy', 'uruguayo': 'uy', 'venezuela': 've', 'venezolano': 've', 'venezolana': 've',
+        'albania': 'al', 'alemania': 'de', 'germany': 'de', 'aleman': 'de', 'alemana': 'de', 'andorra': 'ad',
+        'armenia': 'am', 'austria': 'at', 'austriaco': 'at', 'azerbaiyan': 'az', 'belgica': 'be', 'belga': 'be',
+        'bielorrusia': 'by', 'bosnia y herzegovina': 'ba', 'bulgaria': 'bg', 'chipre': 'cy', 'croacia': 'hr',
+        'dinamarca': 'dk', 'escocia': 'gb-sct', 'escoces': 'gb-sct', 'eslovaquia': 'sk', 'eslovenia': 'si',
+        'espana': 'es', 'spain': 'es', 'espanol': 'es', 'espanola': 'es', 'estonia': 'ee', 'finlandia': 'fi',
+        'francia': 'fr', 'france': 'fr', 'frances': 'fr', 'francesa': 'fr', 'gales': 'gb-wls', 'georgia': 'ge',
+        'grecia': 'gr', 'griego': 'gr', 'holanda': 'nl', 'paises bajos': 'nl', 'hungria': 'hu', 'irlanda': 'ie',
+        'islandia': 'is', 'italia': 'it', 'italy': 'it', 'italiano': 'it', 'italiana': 'it', 'kosovo': 'xk',
+        'letonia': 'lv', 'liechtenstein': 'li', 'lituania': 'lt', 'luxemburgo': 'lu', 'macedonia del norte': 'mk',
+        'malta': 'mt', 'moldavia': 'md', 'monaco': 'mc', 'montenegro': 'me', 'noruega': 'no', 'polonia': 'pl',
+        'portugal': 'pt', 'portugues': 'pt', 'reino unido': 'gb', 'inglaterra': 'gb', 'uk': 'gb', 'ingles': 'gb', 'inglesa': 'gb',
+        'republica checa': 'cz', 'rumania': 'ro', 'rusia': 'ru', 'ruso': 'ru', 'san marino': 'sm', 'serbia': 'rs',
+        'suecia': 'se', 'suiza': 'ch', 'ucrania': 'ua', 'vaticano': 'va',
+        'angola': 'ao', 'argelia': 'dz', 'benin': 'bj', 'botsuana': 'bw', 'burkina faso': 'bf', 'burundi': 'bi',
+        'cabo verde': 'cv', 'camerun': 'cm', 'cameroon': 'cm', 'camerunes': 'cm', 'camerunesa': 'cm',
+        'chad': 'td', 'comoras': 'km', 'congo': 'cg', 'republica democratica del congo': 'cd', 'costa de marfil': 'ci',
+        'egipto': 'eg', 'eritrea': 'er', 'etiopia': 'et', 'gabon': 'ga', 'gambia': 'gm', 'ghana': 'gh',
+        'guinea': 'gn', 'guinea ecuatorial': 'gq', 'guinea-bisau': 'gw', 'kenia': 'ke', 'lesoto': 'ls', 'liberia': 'lr',
+        'libia': 'ly', 'madagascar': 'mg', 'malaui': 'mw', 'mali': 'ml', 'marruecos': 'ma', 'mauricio': 'mu',
+        'mauritania': 'mr', 'mozambique': 'mz', 'namibia': 'na', 'niger': 'ne', 'nigeria': 'ng', 'republica centroafricana': 'cf',
+        'ruanda': 'rw', 'santo tome y principe': 'st', 'senegal': 'sn', 'senegales': 'sn', 'seychelles': 'sc',
+        'sierra leona': 'sl', 'somalia': 'so', 'suazilandia': 'sz', 'sudafrica': 'za', 'sudan': 'sd', 'sudan del sur': 'ss',
+        'tanzania': 'tz', 'togo': 'tg', 'tunez': 'tn', 'uganda': 'ug', 'yibuti': 'dj', 'zambia': 'zm', 'zimbabue': 'zw',
+        'afganistan': 'af', 'arabia saudita': 'sa', 'banglades': 'bd', 'barein': 'bh', 'birmania': 'mm', 'brunei': 'bn',
+        'butan': 'bt', 'camboya': 'kh', 'catar': 'qa', 'qatar': 'qa', 'china': 'cn', 'chino': 'cn',
+        'corea del norte': 'kp', 'corea del sur': 'kr', 'corea': 'kr', 'emiratos arabes unidos': 'ae', 'dubai': 'ae',
+        'filipinas': 'ph', 'india': 'in', 'indonesia': 'id', 'irak': 'iq', 'iran': 'ir', 'israel': 'il',
+        'japon': 'jp', 'japan': 'jp', 'japones': 'jp', 'jordania': 'jo', 'kazajistan': 'kz', 'kirguistan': 'kg',
+        'kuwait': 'kw', 'laos': 'la', 'libano': 'lb', 'malasia': 'my', 'maldivas': 'mv', 'mongolia': 'mn',
+        'nepal': 'np', 'oman': 'om', 'pakistan': 'pk', 'palestina': 'ps', 'singapur': 'sg', 'siria': 'sy',
+        'sri lanka': 'lk', 'tailandia': 'th', 'taiwan': 'tw', 'tayikistan': 'tj', 'timor oriental': 'tl',
+        'turkmenistan': 'tm', 'turquia': 'tr', 'uzbekistan': 'uz', 'vietnam': 'vn', 'yemen': 'ye',
+        'australia': 'au', 'fiyi': 'fj', 'islas marshall': 'mh', 'islas salomon': 'sb', 'kiribati': 'ki',
+        'micronesia': 'fm', 'nauru': 'nr', 'nueva zelanda': 'nz', 'palaos': 'pw', 'papua nueva guinea': 'pg',
+        'samoa': 'ws', 'tonga': 'to', 'tuvalu': 'tv', 'vanuatu': 'vu'
     };
     return codigos[limpio] || null;
 }
@@ -385,108 +223,229 @@ function obtenerEstiloPersona(persona) {
     return { tipo: 'neutro', colorNombre: '#be185d' };
 }
 
+// Función auxiliar para construir el HTML de una tarjeta individual
+function crearElementoTarjeta(persona) {
+    const tarjeta = document.createElement("div");
+    const estiloInfo = obtenerEstiloPersona(persona);
+    let estiloInline = "";
+    let badgeHtml = "";
+
+    if (estiloInfo.tipo === 'unico') {
+        estiloInline = `border-color: ${estiloInfo.color.borde}; background-color: ${estiloInfo.color.fondo};`;
+        badgeHtml = `<div class="badge-rama" style="color: ${estiloInfo.color.texto}; border-color: ${estiloInfo.color.borde};">● ${estiloInfo.etiqueta}</div>`;
+    } else if (estiloInfo.tipo === '50-50') {
+        tarjeta.classList.add("tarjeta-50-50");
+        estiloInline = `--bg-top: ${estiloInfo.top.fondo}; --bg-bottom: ${estiloInfo.bottom.fondo}; --border-top: ${estiloInfo.top.borde}; --border-bottom: ${estiloInfo.bottom.borde};`;
+        badgeHtml = `<div class="badge-rama">◐ ${estiloInfo.etiqueta} (50/50)</div>`;
+    }
+
+    tarjeta.className += " tarjeta-familiar";
+    if (estiloInline) tarjeta.setAttribute("style", estiloInline);
+
+    let avatarContent = `${persona.nombre[0]}${persona.apellido ? persona.apellido[0] : ''}`;
+    if (persona.foto && persona.foto.trim() !== "") {
+        avatarContent = `<img src="${persona.foto}" alt="${persona.nombre}" onerror="this.parentElement.innerText='${avatarContent}'">`;
+    }
+
+    const iso = obtenerCodigoISO(persona.nacionalidad);
+    const banderaHtml = iso 
+        ? `<img src="https://flagcdn.com/w40/${iso}.png" alt="${persona.nacionalidad}" title="${persona.nacionalidad}" class="bandera-header">` 
+        : '';
+
+    const edadAprox = calcularEdad(persona.anioNacimiento);
+
+    tarjeta.innerHTML = `
+        <div class="card-header">
+            <div class="header-izq">
+                <div class="avatar">${avatarContent}</div>
+                <div class="info-principal">
+                    <h3>
+                        <span class="nombre-persona" style="color: ${estiloInfo.colorNombre};">${persona.nombre}</span>
+                        <span class="apellido-persona">${persona.apellido || ''}</span>
+                    </h3>
+                </div>
+            </div>
+            ${banderaHtml}
+        </div>
+        ${badgeHtml}
+        <div class="tags-gen">
+            <span class="tag">${persona.generacion}</span>
+            <span class="tag ${persona.sexo.toLowerCase()}">${persona.sexo}</span>
+            ${persona.nacionalidad ? `<span class="tag nacionalidad">${persona.nacionalidad}</span>` : ''}
+        </div>
+        <div class="edad-aprox">Edad aprox.: ${edadAprox} años</div>
+        <div class="seccion-parejas">
+            <h4>Pareja(s):</h4>
+            <ul class="lista-nombres">
+                ${persona.parejas?.length ? persona.parejas.map(p => `<li>❤️ ${p}</li>`).join('') : '<li>Sin pareja registrada</li>'}
+            </ul>
+        </div>
+    `;
+    return tarjeta;
+}
+
+// Renderizado jerárquico con conectores entre pareja y flechas verticales hacia descendientes
 function renderizarArbol(personasAMostrar) {
     const contenedor = document.getElementById("arbol-net");
     contenedor.innerHTML = "";
 
     const cabezaSeleccionada = document.getElementById("select-cabeza-arbol")?.value || "todos";
-    let filtradas = personasAMostrar;
+    const textoBuscado = document.getElementById("buscador")?.value.toLowerCase().trim() || "";
+    const genFiltro = document.getElementById("filtro-generacion")?.value || "todas";
 
-    if (cabezaSeleccionada !== "todos") {
-        const cabezaObj = listaPersonas.find(p => `${p.nombre} ${p.apellido || ''}`.trim() === cabezaSeleccionada);
-        if (cabezaObj) {
-            const relacionados = new Set([
-                `${cabezaObj.nombre} ${cabezaObj.apellido || ''}`.trim(),
-                ...(cabezaObj.parejas || []),
-                ...(cabezaObj.hijos || [])
-            ]);
-            listaPersonas.forEach(p => {
-                if (cabezaObj.parejas && cabezaObj.parejas.includes(`${p.nombre} ${p.apellido || ''}`.trim())) {
-                    (p.hijos || []).forEach(h => relacionados.add(h));
-                }
-            });
-            filtradas = listaPersonas.filter(p => relacionados.has(`${p.nombre} ${p.apellido || ''}`.trim()));
+    // Si hay una búsqueda de texto o filtro de generación específico activo, mostramos las coincidencias limpias
+    if (textoBuscado !== "" || genFiltro !== "todas") {
+        if (personasAMostrar.length === 0) {
+            contenedor.innerHTML = "<p style='padding: 20px; color: #666;'>No hay registros que coincidan con la búsqueda.</p>";
+            return;
         }
-    }
-
-    if (filtradas.length === 0) {
-        contenedor.innerHTML = "<p style='padding: 20px; color: #666;'>No hay registros para mostrar.</p>";
+        const filaBusqueda = document.createElement("div");
+        filaBusqueda.style.display = "flex";
+        filaBusqueda.style.flexWrap = "wrap";
+        filaBusqueda.style.gap = "24px";
+        personasAMostrar.forEach(p => filaBusqueda.appendChild(crearElementoTarjeta(p)));
+        contenedor.appendChild(filaBusqueda);
         return;
     }
 
-    const generaciones = {};
-    filtradas.forEach(persona => {
-        const gen = persona.generacion || 'Gen 1';
-        if (!generaciones[gen]) generaciones[gen] = [];
-        generaciones[gen].push(persona);
+    // Identificar quiénes son hijos de alguien en la base de datos para no ponerlos en el nivel superior
+    const setHijosDeAlguien = new Set();
+    listaPersonas.forEach(p => {
+        (p.hijos || []).forEach(h => setHijosDeAlguien.add(h.trim()));
     });
 
-    Object.keys(generaciones).sort().forEach(gen => {
-        const filaDiv = document.createElement("div");
-        filaDiv.className = "fila-generacion";
+    // Obtener los cabezas de familia (hombres raíz o seleccionado)
+    let cabezas = listaPersonas.filter(p => p.sexo === 'M' && !setHijosDeAlguien.has(`${p.nombre} ${p.apellido || ''}`.trim()));
+    if (cabezas.length === 0) {
+        cabezas = listaPersonas.filter(p => p.sexo === 'M');
+    }
 
-        generaciones[gen].forEach(persona => {
-            const tarjeta = document.createElement("div");
-            const estiloInfo = obtenerEstiloPersona(persona);
-            let estiloInline = "";
-            let badgeHtml = "";
+    if (cabezaSeleccionada !== "todos") {
+        cabezas = listaPersonas.filter(p => `${p.nombre} ${p.apellido || ''}`.trim() === cabezaSeleccionada);
+    }
 
-            if (estiloInfo.tipo === 'unico') {
-                estiloInline = `border-color: ${estiloInfo.color.borde}; background-color: ${estiloInfo.color.fondo};`;
-                badgeHtml = `<div class="badge-rama" style="color: ${estiloInfo.color.texto}; border-color: ${estiloInfo.color.borde};">● ${estiloInfo.etiqueta}</div>`;
-            } else if (estiloInfo.tipo === '50-50') {
-                tarjeta.classList.add("tarjeta-50-50");
-                estiloInline = `--bg-top: ${estiloInfo.top.fondo}; --bg-bottom: ${estiloInfo.bottom.fondo}; --border-top: ${estiloInfo.top.borde}; --border-bottom: ${estiloInfo.bottom.borde};`;
-                badgeHtml = `<div class="badge-rama">◐ ${estiloInfo.etiqueta} (50/50)</div>`;
+    const renderizados = new Set();
+
+    cabezas.forEach(cabeza => {
+        const nombreCabeza = `${cabeza.nombre} ${cabeza.apellido || ''}`.trim();
+        renderizados.add(nombreCabeza);
+
+        const nucleoDiv = document.createElement("div");
+        nucleoDiv.className = "nucleo-familiar-arbol";
+
+        // 1. Tarjeta del Padre / Cabeza de familia
+        const padreBox = document.createElement("div");
+        padreBox.className = "padre-principal-box";
+        padreBox.appendChild(crearElementoTarjeta(cabeza));
+        nucleoDiv.appendChild(padreBox);
+
+        // Encontrar todas sus parejas (tanto las registradas en él como las mujeres que lo tengan registrado)
+        const nombresParejasSet = new Set(cabeza.parejas || []);
+        listaPersonas.forEach(p => {
+            if (p.sexo === 'F' && p.parejas && p.parejas.includes(nombreCabeza)) {
+                nombresParejasSet.add(`${p.nombre} ${p.apellido || ''}`.trim());
             }
-
-            tarjeta.className += " tarjeta-familiar";
-            if (estiloInline) tarjeta.setAttribute("style", estiloInline);
-
-            let avatarContent = `${persona.nombre[0]}${persona.apellido ? persona.apellido[0] : ''}`;
-            if (persona.foto && persona.foto.trim() !== "") {
-                avatarContent = `<img src="${persona.foto}" alt="${persona.nombre}" onerror="this.parentElement.innerText='${avatarContent}'">`;
-            }
-
-            const iso = obtenerCodigoISO(persona.nacionalidad);
-            const banderaHtml = iso 
-                ? `<img src="https://flagcdn.com/w40/${iso}.png" alt="${persona.nacionalidad}" title="${persona.nacionalidad}" class="bandera-header">` 
-                : '';
-
-            const edadAprox = calcularEdad(persona.anioNacimiento);
-
-            tarjeta.innerHTML = `
-                <div class="card-header">
-                    <div class="header-izq">
-                        <div class="avatar">${avatarContent}</div>
-                        <div class="info-principal">
-                            <h3>
-                                <span class="nombre-persona" style="color: ${estiloInfo.colorNombre};">${persona.nombre}</span>
-                                <span class="apellido-persona">${persona.apellido || ''}</span>
-                            </h3>
-                        </div>
-                    </div>
-                    ${banderaHtml}
-                </div>
-                ${badgeHtml}
-                <div class="tags-gen">
-                    <span class="tag">${persona.generacion}</span>
-                    <span class="tag ${persona.sexo.toLowerCase()}">${persona.sexo}</span>
-                    ${persona.nacionalidad ? `<span class="tag nacionalidad">${persona.nacionalidad}</span>` : ''}
-                </div>
-                <div class="edad-aprox">Edad aprox.: ${edadAprox} años</div>
-                <div class="seccion-parejas">
-                    <h4>Pareja(s):</h4>
-                    <ul class="lista-nombres">
-                        ${persona.parejas?.length ? persona.parejas.map(p => `<li>❤️ ${p}</li>`).join('') : '<li>Sin pareja registrada</li>'}
-                    </ul>
-                </div>
-            `;
-            filaDiv.appendChild(tarjeta);
         });
 
-        contenedor.appendChild(filaDiv);
+        const listaParejas = Array.from(nombresParejasSet);
+
+        if (listaParejas.length > 0) {
+            // 2. Conector horizontal de unión (línea + corazón)
+            const unionDiv = document.createElement("div");
+            unionDiv.className = "conector-horizontal-union";
+            unionDiv.innerHTML = `<div class="linea-union"></div><div class="corazon-union">❤️</div><div class="linea-union"></div>`;
+            nucleoDiv.appendChild(unionDiv);
+
+            // 3. Contenedor de columnas por cada pareja
+            const ramasWrapper = document.createElement("div");
+            ramasWrapper.className = "ramas-parejas-wrapper";
+
+            listaParejas.forEach(nomPareja => {
+                renderizados.add(nomPareja);
+                const parejaObj = listaPersonas.find(p => `${p.nombre} ${p.apellido || ''}`.trim() === nomPareja);
+
+                const colRama = document.createElement("div");
+                colRama.className = "columna-rama-pareja";
+
+                // Tarjeta de la madre/pareja
+                if (parejaObj) {
+                    colRama.appendChild(crearElementoTarjeta(parejaObj));
+                } else {
+                    const placeholder = document.createElement("div");
+                    placeholder.className = "tarjeta-familiar";
+                    placeholder.innerHTML = `<strong>${nomPareja}</strong><br><small>Pareja vinculada</small>`;
+                    colRama.appendChild(placeholder);
+                }
+
+                // Buscar hijos en común o registrados en esta pareja
+                const hijosDeRamaSet = new Set();
+                if (parejaObj && parejaObj.hijos) {
+                    parejaObj.hijos.forEach(h => hijosDeRamaSet.add(h.trim()));
+                }
+                // Si el hijo tiene el apellido de ambos (ej. "Janice Jhon Hick" o "John Hick"), vincularlo automáticamente si está en hijos del padre
+                if (cabeza.hijos) {
+                    cabeza.hijos.forEach(h => {
+                        const hObj = listaPersonas.find(x => `${x.nombre} ${x.apellido || ''}`.trim() === h.trim());
+                        if (parejaObj && hObj) {
+                            const apMadre = (parejaObj.apellido || '').toLowerCase().trim();
+                            const apHijo = (hObj.apellido || '').toLowerCase().trim();
+                            if (apMadre && apHijo.includes(apMadre)) {
+                                hijosDeRamaSet.add(h.trim());
+                            }
+                        }
+                    });
+                }
+
+                const hijosArray = Array.from(hijosDeRamaSet);
+
+                // 4. Conector vertical y flecha hacia los hijos debajo de la madre
+                if (hijosArray.length > 0) {
+                    const conectorDesc = document.createElement("div");
+                    conectorDesc.className = "conector-vertical-hijos";
+                    conectorDesc.innerHTML = `
+                        <div class="linea-vertical-desc"></div>
+                        <span class="etiqueta-descendencia">Descendencia (${hijosArray.length})</span>
+                        <div class="linea-vertical-desc" style="height: 12px;"></div>
+                        <div class="flecha-vertical-desc"></div>
+                    `;
+                    colRama.appendChild(conectorDesc);
+
+                    const contHijos = document.createElement("div");
+                    contHijos.className = "contenedor-hijos-rama";
+
+                    hijosArray.forEach(nomHijo => {
+                        renderizados.add(nomHijo);
+                        const hijoObj = listaPersonas.find(p => `${p.nombre} ${p.apellido || ''}`.trim() === nomHijo);
+                        if (hijoObj) {
+                            contHijos.appendChild(crearElementoTarjeta(hijoObj));
+                        }
+                    });
+
+                    colRama.appendChild(contHijos);
+                }
+
+                ramasWrapper.appendChild(colRama);
+            });
+
+            nucleoDiv.appendChild(ramasWrapper);
+        }
+
+        contenedor.appendChild(nucleoDiv);
     });
+
+    // Mostrar personas independientes que aún no estén conectadas a un cabeza de familia
+    if (cabezaSeleccionada === "todos") {
+        const sueltos = listaPersonas.filter(p => !renderizados.has(`${p.nombre} ${p.apellido || ''}`.trim()));
+        if (sueltos.length > 0) {
+            const filaSueltos = document.createElement("div");
+            filaSueltos.style.display = "flex";
+            filaSueltos.style.flexWrap = "wrap";
+            filaSueltos.style.gap = "24px";
+            filaSueltos.style.marginTop = "20px";
+            sueltos.forEach(s => filaSueltos.appendChild(crearElementoTarjeta(s)));
+            contenedor.appendChild(filaSueltos);
+        }
+    }
 }
 
 function poblarSelectoresRamas() {
