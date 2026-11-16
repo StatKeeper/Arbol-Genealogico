@@ -313,10 +313,10 @@ function crearElementoTarjeta(persona) {
     } else if (estiloInfo.tipo === '50-50') {
         tarjeta.classList.add("tarjeta-50-50");
         estiloInline = `--bg-top: ${estiloInfo.top.fondo}; --bg-bottom: ${estiloInfo.bottom.fondo}; --border-top: ${estiloInfo.top.borde}; --border-bottom: ${estiloInfo.bottom.borde};`;
-        badgeHtml = `<div class="badge-rama">◐ ${estiloInfo.etiqueta} (50/50)</div>`;
+        badgeHtml = `<div class="badge-rama" style="border-color: ${estiloInfo.top.borde}; color: ${estiloInfo.top.texto};">◐ ${estiloInfo.etiqueta} (50/50)</div>`;
     }
 
-    tarjeta.className = "tarjeta-familiar";
+    tarjeta.className += " tarjeta-familiar";
     if (estiloInline) tarjeta.setAttribute("style", estiloInline);
 
     let avatarContent = `${persona.nombre[0]}${persona.apellido ? persona.apellido[0] : ''}`;
