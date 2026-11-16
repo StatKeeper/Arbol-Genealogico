@@ -86,6 +86,7 @@ function calcularEdad(anioNacimiento) {
     return new Date().getFullYear() - anioNacimiento;
 }
 
+// Poblar selectores de parejas e hijos en columnas y orden alfabético
 function poblarSelectoresParejasHijosAdmin(parejasSeleccionadas = [], hijosSeleccionados = []) {
     const contenedorParejas = document.getElementById("contenedor-check-parejas");
     const contenedorHijos = document.getElementById("contenedor-check-hijos");
@@ -109,8 +110,7 @@ function poblarSelectoresParejasHijosAdmin(parejasSeleccionadas = [], hijosSelec
     personasOrdenadas.forEach(p => {
         const nombreCompleto = `${p.nombre} ${p.apellido || ''}`.trim();
         const idEditando = document.getElementById("edit-id").value;
-        const esElMismo = idEditando && p.id === idEditando;
-        if (esElMismo) return;
+        if (idEditando && p.id === idEditando) return; // Evitar autoseleccionarse
 
         const isParejaChecked = parejasSeleccionadas.includes(nombreCompleto);
         const divP = document.createElement("label");
@@ -499,7 +499,14 @@ function actualizarListaAdmin() {
     document.getElementById("contador-registros").innerText = listaPersonas.length;
     contenedorLista.innerHTML = "";
 
-    listaPersonas.forEach(p => {
+    // Ordenar alfabéticamente en la lista de registros actuales para mantener orden limpio
+    const personasOrdenadasAdmin = [...listaPersonas].sort((a, b) => {
+        const nA = `${a.nombre} ${a.apellido || ''}`.toLowerCase();
+        const nB = `${b.nombre} ${b.apellido || ''}`.toLowerCase();
+        return nA.localeCompare(nB);
+    });
+
+    personasOrdenadasAdmin.forEach(p => {
         const fila = document.createElement("div");
         fila.className = "admin-item-row";
         fila.innerHTML = `
