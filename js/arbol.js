@@ -867,7 +867,7 @@ function limpiarFormulario() {
     poblarSelectoresParejasHijosAdmin();
 }
 
-export function exportarJSON() {
+function exportarJSON() {
     const datosFinales = { personas: listaPersonas, ramas: listaRamas };
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(datosFinales, null, 2));
     const downloadAnchor = document.createElement('a');
