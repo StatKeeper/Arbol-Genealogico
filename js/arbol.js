@@ -20,7 +20,7 @@ const PALETA_COLORES = [
     { id: 'c16', num: 16, nombre: 'Esmeralda', borde: '#059669', fondo: '#d1fae5', texto: '#065f46', tipo: 'sólido' },
     { id: 'c17', num: 17, nombre: 'Teja', borde: '#c2410c', fondo: '#ffedd5', texto: '#7c2d12', tipo: 'sólido' },
     { id: 'c18', num: 18, nombre: 'Violeta', borde: '#7c3aed', fondo: '#ede9fe', texto: '#5b21b6', tipo: 'sólido' },
-    { id: 'c19', num: 19, nombre: 'Rosa Fucsia', borde: '#c026d3', fondo: 'fae8ff', texto: '#86198f', tipo: 'sólido' },
+    { id: 'c19', num: 19, nombre: 'Rosa Fucsia', borde: '#c026d3', fondo: '#fae8ff', texto: '#86198f', tipo: 'sólido' },
     { id: 'c20', num: 20, nombre: 'Azul Acero', borde: '#2563eb', fondo: '#dbeafe', texto: '#1d4ed8', tipo: 'sólido' },
     { id: 'c21', num: 21, nombre: 'Chocolate', borde: '#57534e', fondo: '#e7e5e4', texto: '#292524', tipo: 'sólido' },
     { id: 'c22', num: 22, nombre: 'Índigo', borde: '#4f46e5', fondo: '#e0e7ff', texto: '#3730a3', tipo: 'sólido' },
@@ -210,14 +210,13 @@ function obtenerInfoBanderasYTexto(persona) {
 }
 
 function obtenerObjetoColorPorIdOPersonalizado(colorId) {
-    // Si el colorId empieza con '#' es un color personalizado libre elegido por el usuario
     if (colorId && colorId.startsWith('#')) {
         return {
             id: colorId,
             num: 'Custom',
             nombre: 'Personalizado',
             borde: colorId,
-            fondo: colorId + '25', // Añade transparencia suave
+            fondo: colorId + '25',
             texto: '#111827',
             tipo: 'sólido'
         };
@@ -247,7 +246,7 @@ function obtenerEstiloPersona(persona) {
     }
 
     if (!colorHeredadoObj && madreBiologica) {
-        const nombreMadre = `${madreBiologica.nombre} ${madreBiological.apellido || ''}`.trim();
+        const nombreMadre = `${madreBiologica.nombre} ${madreBiologica.apellido || ''}`.trim();
         const ramaMadre = listaRamas.find(r => r.mujer === nombreMadre);
         if (ramaMadre) {
             colorHeredadoObj = obtenerObjetoColorPorIdOPersonalizado(ramaMadre.colorId);
@@ -347,6 +346,7 @@ function crearElementoTarjeta(persona) {
 
 function renderizarArbol(personasAMostrar) {
     const contenedor = document.getElementById("arbol-net");
+    if (!contenedor) return;
     contenedor.innerHTML = "";
 
     const cabezaSeleccionada = document.getElementById("select-cabeza-arbol")?.value || "todos";
@@ -590,7 +590,7 @@ function eliminarRama(id) {
 }
 
 function cambiarColorRama(idRama) {
-    const nuevaColorHex = prompt("Ingresa un color en formato HEX (ej. #3b82f6) o selecciona de la paleta haciendo clic en 'Gestionar':");
+    const nuevaColorHex = prompt("Ingresa un color en formato HEX (ej. #3b82f6) o selecciona de la paleta:");
     if (!nuevaColorHex) return;
     
     const rama = listaRamas.find(r => r.id === idRama);
@@ -604,7 +604,8 @@ function cambiarColorRama(idRama) {
 
 function renderizarListaRamasActivas() {
     const contenedor = document.getElementById("lista-ramas-activas");
-    document.getElementById("contador-ramas").innerText = listaRamas.length;
+    const contadorRamasEl = document.getElementById("contador-ramas");
+    if (contadorRamasEl) contadorRamasEl.innerText = listaRamas.length;
     if (!contenedor) return;
     contenedor.innerHTML = "";
 
@@ -766,7 +767,9 @@ function guardarFamiliar(event) {
 
 function actualizarListaAdmin() {
     const contenedorLista = document.getElementById("lista-admin-registros");
-    document.getElementById("contador-registros").innerText = listaPersonas.length;
+    const contadorRegistrosEl = document.getElementById("contador-registros");
+    if (contadorRegistrosEl) contadorRegistrosEl.innerText = listaPersonas.length;
+    if (!contenedorLista) return;
     contenedorLista.innerHTML = "";
 
     const personasOrdenadasAdmin = [...listaPersonas].sort((a, b) => {
@@ -822,7 +825,7 @@ function limpiarFormulario() {
     poblarSelectoresParejasHijosAdmin();
 }
 
-function exportarJSON() {
+export function exportarJSON() {
     const datosFinales = { personas: listaPersonas, ramas: listaRamas };
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(datosFinales, null, 2));
     const downloadAnchor = document.createElement('a');
