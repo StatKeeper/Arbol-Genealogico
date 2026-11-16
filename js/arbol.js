@@ -86,33 +86,46 @@ function calcularEdad(anioNacimiento) {
     return new Date().getFullYear() - anioNacimiento;
 }
 
-// Obtener bandera real según el país escrito
-function obtenerBanderaPais(pais) {
-    if (!pais) return '🌍';
-    const p = pais.toLowerCase().trim();
-    const mapBanderas = {
-        'brasil': '🇧🇷',
-        'brazil': '🇧🇷',
-        'argentina': '🇦🇷',
-        'alemania': '🇩🇪',
-        'germany': '🇩🇪',
-        'perú': '🇵🇪',
-        'peru': '🇵🇪',
-        'españa': '🇪🇸',
-        'spain': '🇪🇸',
-        'chile': '🇨🇱',
-        'colombia': '🇨🇴',
-        'méxico': '🇲🇽',
-        'mexico': '🇲🇽',
-        'estados unidos': '🇺🇸',
-        'eeuu': '🇺🇸',
-        'usa': '🇺🇸',
-        'italia': '🇮🇹',
-        'francia': '🇫🇷',
-        'japón': '🇯🇵',
-        'japon': '🇯🇵'
+// Obtener código ISO de dos letras para cargar bandera real en imagen
+function obtenerCodigoISO(pais) {
+    if (!pais) return null;
+    const limpio = pais.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+    const codigos = {
+        'brasil': 'br', 'brazil': 'br',
+        'argentina': 'ar',
+        'alemania': 'de', 'germany': 'de',
+        'peru': 'pe',
+        'espana': 'es', 'spain': 'es',
+        'chile': 'cl',
+        'colombia': 'co',
+        'mexico': 'mx',
+        'estados unidos': 'us', 'eeuu': 'us', 'ee.uu.': 'us', 'usa': 'us',
+        'italia': 'it', 'italy': 'it',
+        'francia': 'fr', 'france': 'fr',
+        'japon': 'jp', 'japan': 'jp',
+        'senegal': 'sn',
+        'reino unido': 'gb', 'inglaterra': 'gb', 'uk': 'gb',
+        'canada': 'ca',
+        'ecuador': 'ec',
+        'bolivia': 'bo',
+        'venezuela': 've',
+        'uruguay': 'uy',
+        'paraguay': 'py',
+        'portugal': 'pt',
+        'suiza': 'ch',
+        'belgica': 'be',
+        'holanda': 'nl', 'paises bajos': 'nl',
+        'china': 'cn',
+        'corea del sur': 'kr', 'corea': 'kr',
+        'india': 'in',
+        'rusia': 'ru',
+        'australia': 'au',
+        'marruecos': 'ma',
+        'egipto': 'eg',
+        'nigeria': 'ng',
+        'sudafrica': 'za'
     };
-    return mapBanderas[p] || '🌍';
+    return codigos[limpio] || null;
 }
 
 function poblarSelectoresParejasHijosAdmin(parejasSeleccionadas = [], hijosSeleccionados = []) {
@@ -156,7 +169,7 @@ function poblarSelectoresParejasHijosAdmin(parejasSeleccionadas = [], hijosSelec
 
 function obtenerEstiloPersona(persona) {
     if (persona.sexo === 'M') {
-        return { tipo: 'neutro', colorNombre: '#1d4ed8' }; // Azul para hombres
+        return { tipo: 'neutro', colorNombre: '#1d4ed8' };
     }
 
     const nombreCompleto = `${persona.nombre} ${persona.apellido || ''}`.trim();
@@ -193,7 +206,7 @@ function obtenerEstiloPersona(persona) {
         return { tipo: 'unico', color: colorHeredadoObj, etiqueta: `Heredado: Color ${colorHeredadoObj.num} - ${colorHeredadoObj.nombre}`, colorNombre: colorHeredadoObj.texto };
     }
 
-    return { tipo: 'neutro', colorNombre: '#be185d' }; // Rosado/Fucsia por defecto para mujeres sin rama
+    return { tipo: 'neutro', colorNombre: '#be185d' };
 }
 
 function renderizarArbol(personasAMostrar) {
@@ -254,30 +267,36 @@ function renderizarArbol(personasAMostrar) {
             tarjeta.className += " tarjeta-familiar";
             if (estiloInline) tarjeta.setAttribute("style", estiloInline);
 
-            // Avatar con foto o iniciales
             let avatarContent = `${persona.nombre[0]}${persona.apellido ? persona.apellido[0] : ''}`;
             if (persona.foto && persona.foto.trim() !== "") {
                 avatarContent = `<img src="${persona.foto}" alt="${persona.nombre}" onerror="this.parentElement.innerText='${avatarContent}'">`;
             }
 
-            const bandera = obtenerBanderaPais(persona.nacionalidad);
+            const iso = obtenerCodigoISO(persona.nacionalidad);
+            const banderaHtml = iso 
+                ? `<img src="https://flagcdn.com/w40/${iso}.png" alt="${persona.nacionalidad}" title="${persona.nacionalidad}" class="bandera-header">` 
+                : '';
+
             const edadAprox = calcularEdad(persona.anioNacimiento);
 
             tarjeta.innerHTML = `
                 <div class="card-header">
-                    <div class="avatar">${avatarContent}</div>
-                    <div class="info-principal">
-                        <h3>
-                            <span class="nombre-persona" style="color: ${estiloInfo.colorNombre};">${persona.nombre}</span>
-                            <span class="apellido-persona">${persona.apellido || ''}</span>
-                        </h3>
+                    <div class="header-izq">
+                        <div class="avatar">${avatarContent}</div>
+                        <div class="info-principal">
+                            <h3>
+                                <span class="nombre-persona" style="color: ${estiloInfo.colorNombre};">${persona.nombre}</span>
+                                <span class="apellido-persona">${persona.apellido || ''}</span>
+                            </h3>
+                        </div>
                     </div>
+                    ${banderaHtml}
                 </div>
                 ${badgeHtml}
                 <div class="tags-gen">
                     <span class="tag">${persona.generacion}</span>
                     <span class="tag ${persona.sexo.toLowerCase()}">${persona.sexo}</span>
-                    ${persona.nacionalidad ? `<span class="tag nacionalidad">${bandera} ${persona.nacionalidad}</span>` : ''}
+                    ${persona.nacionalidad ? `<span class="tag nacionalidad">${persona.nacionalidad}</span>` : ''}
                 </div>
                 <div class="edad-aprox">Edad aprox.: ${edadAprox} años</div>
                 <div class="seccion-parejas">
