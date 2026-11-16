@@ -89,9 +89,7 @@
                 <div class="form-group">
                     <label>3. Elige un color disponible (Los colores usados tienen candado 🔒):</label>
                     <input type="hidden" id="rama-color-seleccionado">
-                    <div id="paleta-colores-grid" class="paleta-grid">
-                        <!-- Se genera dinámicamente con candados -->
-                    </div>
+                    <div id="paleta-colores-grid" class="paleta-grid"></div>
                 </div>
 
                 <button type="button" class="btn-guardar" onclick="crearAsignarRama()" style="margin-top: 10px;">Asignar Color a Rama</button>
@@ -99,9 +97,7 @@
 
             <div class="ramas-panel-card">
                 <h3>Ramas Activas y Leyenda (<span id="contador-ramas">0</span>)</h3>
-                <div id="lista-ramas-activas" class="lista-ramas-box">
-                    <!-- Listado de ramas creadas y botón para liberar color -->
-                </div>
+                <div id="lista-ramas-activas" class="lista-ramas-box"></div>
             </div>
         </div>
     </section>
@@ -151,13 +147,13 @@
                     </div>
 
                     <div class="form-group">
-                        <label>Pareja(s) (separadas por coma)</label>
-                        <input type="text" id="inp-parejas" placeholder="Ej. Janet Hick, Kelly Brow">
+                        <label>Pareja(s) (Selecciona de la lista):</label>
+                        <div id="contenedor-check-parejas" class="selector-multiple-box"></div>
                     </div>
 
                     <div class="form-group">
-                        <label>Hijos / Descendientes directos (separados por coma)</label>
-                        <input type="text" id="inp-hijos" placeholder="Ej. Janice John Hick, Sara John Brow">
+                        <label>Hijos / Descendientes directos (Selecciona de la lista):</label>
+                        <div id="contenedor-check-hijos" class="selector-multiple-box"></div>
                     </div>
 
                     <div class="form-botones">
