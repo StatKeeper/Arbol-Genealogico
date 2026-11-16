@@ -142,7 +142,6 @@ function obtenerCodigoISO(pais) {
     return codigos[limpio] || null;
 }
 
-// Obtener datos de nacionalidad y banderas (propia o heredada de padre + madre)
 function obtenerInfoBanderasYTexto(persona) {
     const paisPropio = (persona.nacionalidad || '').trim();
     if (paisPropio !== '') {
@@ -153,7 +152,6 @@ function obtenerInfoBanderasYTexto(persona) {
         return { htmlBanderas, textoTag: paisPropio };
     }
 
-    // Si no tiene nacionalidad manual, buscar a su padre y a su madre
     const nombreCompleto = `${persona.nombre} ${persona.apellido || ''}`.trim();
     const padre = listaPersonas.find(p => p.sexo === 'M' && p.hijos && p.hijos.includes(nombreCompleto));
     const madre = listaPersonas.find(p => p.sexo === 'F' && p.hijos && p.hijos.includes(nombreCompleto));
@@ -165,7 +163,6 @@ function obtenerInfoBanderasYTexto(persona) {
     const isoMadre = obtenerCodigoISO(paisMadre);
 
     if (isoPadre && isoMadre && isoPadre !== isoMadre) {
-        // Dos banderas apiladas: Padre arriba, Madre abajo
         const htmlBanderas = `
             <div class="banderas-contenedor-der">
                 <img src="https://flagcdn.com/w40/${isoPadre}.png" alt="${paisPadre}" title="Padre: ${paisPadre}" class="bandera-doble-item">
@@ -409,19 +406,37 @@ function renderizarArbol(personasAMostrar) {
                     colRama.appendChild(placeholder);
                 }
 
+                // VINCULACIÓN ESTRICTA Y PRECISA DE HIJOS:
+                // Un hijo pertenece a esta rama si está explícitamente en la lista de hijos del padre (cabeza)
+                // Y ADEMÁS comparte apellido con el padre O la madre, evitando cruces erróneos entre parejas distintas.
                 const hijosDeRamaSet = new Set();
-                if (parejaObj && parejaObj.hijos) {
-                    parejaObj.hijos.forEach(h => hijosDeRamaSet.add(h.trim()));
-                }
                 if (cabeza.hijos) {
-                    cabeza.hijos.forEach(h => {
-                        const hObj = listaPersonas.find(x => `${x.nombre} ${x.apellido || ''}`.trim() === h.trim());
-                        if (parejaObj && hObj) {
-                            const apMadre = (parejaObj.apellido || '').toLowerCase().trim();
+                    cabeza.hijos.forEach(hNom => {
+                        const hObj = listaPersonas.find(x => `${x.nombre} ${x.apellido || ''}`.trim() === hNom.trim());
+                        if (hObj) {
+                            const apPadre = (cabeza.apellido || '').toLowerCase().trim();
+                            const apMadre = parejaObj ? (parejaObj.apellido || '').toLowerCase().trim() : '';
                             const apHijo = (hObj.apellido || '').toLowerCase().trim();
-                            if (apMadre && apHijo.includes(apMadre)) {
-                                hijosDeRamaSet.add(h.trim());
+
+                            // Validar que el hijo tenga el apellido de este padre o de esta madre específica
+                            const coincideConPadre = apPadre && apHijo.includes(apPadre);
+                            const coincideConMadre = apMadre && apHijo.includes(apMadre);
+
+                            // Si la madre tiene múltiples parejas (como Janet), exigimos que el apellido del hijo coincida con la madre o con el padre de esta rama
+                            if (coincideConPadre || coincideConMadre) {
+                                // Comprobar también si la madre tiene este hijo registrado en su propia lista de hijos
+                                if (!parejaObj || !parejaObj.hijos || parejaObj.hijos.length === 0 || parejaObj.hijos.includes(hNom.trim())) {
+                                    hijosDeRamaSet.add(hNom.trim());
+                                }
                             }
+                        }
+                    });
+                }
+                // Si la madre también tiene registrado al hijo explícitamente
+                if (parejaObj && parejaObj.hijos) {
+                    parejaObj.hijos.forEach(h => {
+                        if (cabeza.hijos && cabeza.hijos.includes(h.trim())) {
+                            hijosDeRamaSet.add(h.trim());
                         }
                     });
                 }
