@@ -86,7 +86,35 @@ function calcularEdad(anioNacimiento) {
     return new Date().getFullYear() - anioNacimiento;
 }
 
-// Poblar selectores de parejas e hijos en columnas y orden alfabético
+// Obtener bandera real según el país escrito
+function obtenerBanderaPais(pais) {
+    if (!pais) return '🌍';
+    const p = pais.toLowerCase().trim();
+    const mapBanderas = {
+        'brasil': '🇧🇷',
+        'brazil': '🇧🇷',
+        'argentina': '🇦🇷',
+        'alemania': '🇩🇪',
+        'germany': '🇩🇪',
+        'perú': '🇵🇪',
+        'peru': '🇵🇪',
+        'españa': '🇪🇸',
+        'spain': '🇪🇸',
+        'chile': '🇨🇱',
+        'colombia': '🇨🇴',
+        'méxico': '🇲🇽',
+        'mexico': '🇲🇽',
+        'estados unidos': '🇺🇸',
+        'eeuu': '🇺🇸',
+        'usa': '🇺🇸',
+        'italia': '🇮🇹',
+        'francia': '🇫🇷',
+        'japón': '🇯🇵',
+        'japon': '🇯🇵'
+    };
+    return mapBanderas[p] || '🌍';
+}
+
 function poblarSelectoresParejasHijosAdmin(parejasSeleccionadas = [], hijosSeleccionados = []) {
     const contenedorParejas = document.getElementById("contenedor-check-parejas");
     const contenedorHijos = document.getElementById("contenedor-check-hijos");
@@ -110,7 +138,7 @@ function poblarSelectoresParejasHijosAdmin(parejasSeleccionadas = [], hijosSelec
     personasOrdenadas.forEach(p => {
         const nombreCompleto = `${p.nombre} ${p.apellido || ''}`.trim();
         const idEditando = document.getElementById("edit-id").value;
-        if (idEditando && p.id === idEditando) return; // Evitar autoseleccionarse
+        if (idEditando && p.id === idEditando) return;
 
         const isParejaChecked = parejasSeleccionadas.includes(nombreCompleto);
         const divP = document.createElement("label");
@@ -128,7 +156,7 @@ function poblarSelectoresParejasHijosAdmin(parejasSeleccionadas = [], hijosSelec
 
 function obtenerEstiloPersona(persona) {
     if (persona.sexo === 'M') {
-        return { tipo: 'neutro' };
+        return { tipo: 'neutro', colorNombre: '#1d4ed8' }; // Azul para hombres
     }
 
     const nombreCompleto = `${persona.nombre} ${persona.apellido || ''}`.trim();
@@ -148,7 +176,8 @@ function obtenerEstiloPersona(persona) {
                 tipo: '50-50',
                 top: colorHeredadoObj,
                 bottom: nuevaRamaColorObj,
-                etiqueta: `Color ${colorHeredadoObj.num} / Color ${nuevaRamaColorObj.num}`
+                etiqueta: `Color ${colorHeredadoObj.num} / Color ${nuevaRamaColorObj.num}`,
+                colorNombre: colorHeredadoObj.texto
             };
         }
     }
@@ -156,15 +185,15 @@ function obtenerEstiloPersona(persona) {
     if (ramasDirectas.length > 0) {
         const colObj = PALETA_COLORES.find(c => c.id === ramasDirectas[0].colorId);
         if (colObj) {
-            return { tipo: 'unico', color: colObj, etiqueta: `Color ${colObj.num} - ${colObj.nombre}` };
+            return { tipo: 'unico', color: colObj, etiqueta: `Color ${colObj.num} - ${colObj.nombre}`, colorNombre: colObj.texto };
         }
     }
 
     if (colorHeredadoObj) {
-        return { tipo: 'unico', color: colorHeredadoObj, etiqueta: `Heredado: Color ${colorHeredadoObj.num} - ${colorHeredadoObj.nombre}` };
+        return { tipo: 'unico', color: colorHeredadoObj, etiqueta: `Heredado: Color ${colorHeredadoObj.num} - ${colorHeredadoObj.nombre}`, colorNombre: colorHeredadoObj.texto };
     }
 
-    return { tipo: 'neutro' };
+    return { tipo: 'neutro', colorNombre: '#be185d' }; // Rosado/Fucsia por defecto para mujeres sin rama
 }
 
 function renderizarArbol(personasAMostrar) {
@@ -225,22 +254,30 @@ function renderizarArbol(personasAMostrar) {
             tarjeta.className += " tarjeta-familiar";
             if (estiloInline) tarjeta.setAttribute("style", estiloInline);
 
-            const iniciales = `${persona.nombre[0]}${persona.apellido ? persona.apellido[0] : ''}`;
+            // Avatar con foto o iniciales
+            let avatarContent = `${persona.nombre[0]}${persona.apellido ? persona.apellido[0] : ''}`;
+            if (persona.foto && persona.foto.trim() !== "") {
+                avatarContent = `<img src="${persona.foto}" alt="${persona.nombre}" onerror="this.parentElement.innerText='${avatarContent}'">`;
+            }
+
+            const bandera = obtenerBanderaPais(persona.nacionalidad);
             const edadAprox = calcularEdad(persona.anioNacimiento);
 
             tarjeta.innerHTML = `
                 <div class="card-header">
-                    <div class="avatar">${iniciales}</div>
+                    <div class="avatar">${avatarContent}</div>
                     <div class="info-principal">
-                        <h3>${persona.nombre}</h3>
-                        <p>${persona.apellido || ''}</p>
+                        <h3>
+                            <span class="nombre-persona" style="color: ${estiloInfo.colorNombre};">${persona.nombre}</span>
+                            <span class="apellido-persona">${persona.apellido || ''}</span>
+                        </h3>
                     </div>
                 </div>
                 ${badgeHtml}
                 <div class="tags-gen">
                     <span class="tag">${persona.generacion}</span>
                     <span class="tag ${persona.sexo.toLowerCase()}">${persona.sexo}</span>
-                    ${persona.nacionalidad ? `<span class="tag nacionalidad">🌍 ${persona.nacionalidad}</span>` : ''}
+                    ${persona.nacionalidad ? `<span class="tag nacionalidad">${bandera} ${persona.nacionalidad}</span>` : ''}
                 </div>
                 <div class="edad-aprox">Edad aprox.: ${edadAprox} años</div>
                 <div class="seccion-parejas">
@@ -474,12 +511,13 @@ function guardarFamiliar(event) {
     const sexo = document.getElementById("inp-sexo").value;
     const anioNacimiento = parseInt(document.getElementById("inp-anio").value);
     const nacionalidad = document.getElementById("inp-nacionalidad").value.trim();
+    const foto = document.getElementById("inp-foto").value.trim();
     
     const parejas = Array.from(document.querySelectorAll('input[name="check-pareja"]:checked')).map(el => el.value);
     const hijos = Array.from(document.querySelectorAll('input[name="check-hijo"]:checked')).map(el => el.value);
 
     const id = editId ? editId : `${nombre.toLowerCase()}_${apellido.toLowerCase()}`.replace(/\s+/g, '_');
-    const objetoFamiliar = { id, nombre, apellido, generacion, sexo, anioNacimiento, nacionalidad, parejas, hijos };
+    const objetoFamiliar = { id, nombre, apellido, generacion, sexo, anioNacimiento, nacionalidad, foto, parejas, hijos };
 
     if (editId) {
         const index = listaPersonas.findIndex(p => p.id === editId);
@@ -499,7 +537,6 @@ function actualizarListaAdmin() {
     document.getElementById("contador-registros").innerText = listaPersonas.length;
     contenedorLista.innerHTML = "";
 
-    // Ordenar alfabéticamente en la lista de registros actuales para mantener orden limpio
     const personasOrdenadasAdmin = [...listaPersonas].sort((a, b) => {
         const nA = `${a.nombre} ${a.apellido || ''}`.toLowerCase();
         const nB = `${b.nombre} ${b.apellido || ''}`.toLowerCase();
@@ -532,6 +569,7 @@ function cargarParaEditar(id) {
     document.getElementById("inp-sexo").value = p.sexo;
     document.getElementById("inp-anio").value = p.anioNacimiento;
     document.getElementById("inp-nacionalidad").value = p.nacionalidad || '';
+    document.getElementById("inp-foto").value = p.foto || '';
     
     poblarSelectoresParejasHijosAdmin(p.parejas || [], p.hijos || []);
     document.getElementById("titulo-formulario").innerText = `Editando a: ${p.nombre} ${p.apellido || ''}`;
