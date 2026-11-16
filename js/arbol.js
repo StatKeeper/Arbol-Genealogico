@@ -271,10 +271,21 @@ function obtenerEstiloPersona(persona) {
         }
     }
 
+    // Buscamos si la persona formó una rama propia (directa en listaRamas)
     const ramasDirectas = listaRamas.filter(r => r.mujer === nombreCompleto || r.hombre === nombreCompleto);
     let colorPropioObj = null;
     if (ramasDirectas.length > 0) {
         colorPropioObj = obtenerObjetoColorPorIdOPersonalizado(ramasDirectas[0].colorId);
+    } else if (persona.sexo === 'F' && persona.parejas && persona.parejas.length > 0) {
+        // Si es mujer, tiene color heredado y tiene pareja registrada pero no se creó rama explícita,
+        // buscamos si su pareja forma parte de alguna rama para aplicarle el 50/50 automáticamente
+        for (const nombrePareja of persona.parejas) {
+            const ramaPareja = listaRamas.find(r => r.hombre === nombrePareja || r.mujer === nombrePareja);
+            if (ramaPareja) {
+                colorPropioObj = obtenerObjetoColorPorIdOPersonalizado(ramaPareja.colorId);
+                break;
+            }
+        }
     }
 
     if (colorHeredadoObj && colorPropioObj && colorHeredadoObj.id !== colorPropioObj.id) {
