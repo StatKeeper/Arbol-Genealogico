@@ -1,7 +1,7 @@
 let listaPersonas = [];
 let listaRamas = [];
 
-// Paleta de 12 colores bien diferenciados (Primarios + Secundarios + Tierra/Pastel)
+// Paleta de colores con 12 tonos diferenciados
 const PALETA_COLORES = [
     { id: 'c1', num: 1, nombre: 'Rojo', borde: '#dc2626', fondo: 'rgba(220, 38, 38, 0.14)', texto: '#991b1b' },
     { id: 'c2', num: 2, nombre: 'Azul', borde: '#2563eb', fondo: 'rgba(37, 99, 235, 0.14)', texto: '#1e40af' },
@@ -24,32 +24,33 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function cargarDatos() {
     try {
+        // 1. Intentar cargar primero desde la memoria del navegador (localStorage) para no perder nada
+        const guardadoLocal = localStorage.getItem('familia_datos_privados');
+        if (guardadoLocal) {
+            const datosLocales = JSON.parse(guardadoLocal);
+            listaPersonas = datosLocales.personas || [];
+            listaRamas = datosLocales.ramas || [];
+            refrescarTodo();
+            return;
+        }
+
+        // 2. Si no hay nada en el navegador, cargar desde el archivo JSON del repositorio
         const respuesta = await fetch('data/familia.json');
         const datos = await respuesta.json();
         listaPersonas = datos.personas || [];
         listaRamas = datos.ramas || [];
 
-        // Migrar colores antiguos si aún no hay ramas creadas
-        if (listaRamas.length === 0) {
-            listaPersonas.forEach(p => {
-                if (p.sexo === 'F' && p.ramaColor && p.ramaColor !== 'neutro') {
-                    const mapa = { 'rojo': 'c1', 'azul': 'c2', 'amarillo': 'c3', 'verde': 'c4', 'morado': 'c6' };
-                    const colorId = mapa[p.ramaColor] || 'c1';
-                    const parejaH = p.parejas && p.parejas.length > 0 ? p.parejas[0] : 'Cabeza de Familia';
-                    listaRamas.push({
-                        id: `rama_${p.id}`,
-                        hombre: parejaH,
-                        mujer: `${p.nombre} ${p.apellido || ''}`.trim(),
-                        colorId: colorId
-                    });
-                }
-            });
-        }
-
+        guardarEnMemoriaLocal();
         refrescarTodo();
     } catch (error) {
         console.error("Error al cargar los datos:", error);
     }
+}
+
+// Guardar automáticamente en el navegador
+function guardarEnMemoriaLocal() {
+    const datosActuales = { personas: listaPersonas, ramas: listaRamas };
+    localStorage.setItem('familia_datos_privados', JSON.stringify(datosActuales));
 }
 
 function refrescarTodo() {
@@ -86,19 +87,14 @@ function calcularEdad(anioNacimiento) {
     return new Date().getFullYear() - anioNacimiento;
 }
 
-// Obtener el color o colores (50/50) de una persona según las ramas y herencia materna
 function obtenerEstiloPersona(persona) {
-    // Los hombres (M) siempre van neutros (sin color)
     if (persona.sexo === 'M') {
         return { tipo: 'neutro' };
     }
 
     const nombreCompleto = `${persona.nombre} ${persona.apellido || ''}`.trim();
-
-    // 1. Verificar si es madre fundadora directa de alguna rama
     const ramasDirectas = listaRamas.filter(r => r.mujer === nombreCompleto);
     
-    // 2. Verificar si hereda color de una madre (es hija de alguna mujer con rama)
     const madreConRama = listaPersonas.find(p => p.sexo === 'F' && p.hijos && p.hijos.includes(nombreCompleto));
     let colorHeredadoObj = null;
     if (madreConRama) {
@@ -106,7 +102,6 @@ function obtenerEstiloPersona(persona) {
         if (ramaMadre) colorHeredadoObj = PALETA_COLORES.find(c => c.id === ramaMadre.colorId);
     }
 
-    // Caso 50% / 50%: Tiene color heredado (arriba) Y forma parte de una nueva rama (abajo)
     if (colorHeredadoObj && ramasDirectas.length > 0) {
         const nuevaRamaColorObj = PALETA_COLORES.find(c => c.id === ramasDirectas[0].colorId);
         if (nuevaRamaColorObj && colorHeredadoObj.id !== nuevaRamaColorObj.id) {
@@ -119,7 +114,6 @@ function obtenerEstiloPersona(persona) {
         }
     }
 
-    // Caso Rama Directa (ej. Janet Hick = Color 1 Rojo)
     if (ramasDirectas.length > 0) {
         const colObj = PALETA_COLORES.find(c => c.id === ramasDirectas[0].colorId);
         if (colObj) {
@@ -127,7 +121,6 @@ function obtenerEstiloPersona(persona) {
         }
     }
 
-    // Caso Descendiente Directa hacia abajo (ej. Janice John Hick hereda Rojo de Janet)
     if (colorHeredadoObj) {
         return { tipo: 'unico', color: colorHeredadoObj, etiqueta: `Heredado: Color ${colorHeredadoObj.num} - ${colorHeredadoObj.nombre}` };
     }
@@ -135,7 +128,6 @@ function obtenerEstiloPersona(persona) {
     return { tipo: 'neutro' };
 }
 
-// Renderizado del Árbol
 function renderizarArbol(personasAMostrar) {
     const contenedor = document.getElementById("arbol-net");
     contenedor.innerHTML = "";
@@ -151,7 +143,6 @@ function renderizarArbol(personasAMostrar) {
                 ...(cabezaObj.parejas || []),
                 ...(cabezaObj.hijos || [])
             ]);
-            // Incluir hijos de sus parejas
             listaPersonas.forEach(p => {
                 if (cabezaObj.parejas && cabezaObj.parejas.includes(`${p.nombre} ${p.apellido || ''}`.trim())) {
                     (p.hijos || []).forEach(h => relacionados.add(h));
@@ -227,7 +218,6 @@ function renderizarArbol(personasAMostrar) {
     });
 }
 
-// Gestión de Ramas y Paleta con Candados
 function poblarSelectoresRamas() {
     const selHombre = document.getElementById("rama-select-hombre");
     const selMujer = document.getElementById("rama-select-mujer");
@@ -290,24 +280,19 @@ function crearAsignarRama() {
         return;
     }
 
-    // Reemplazar rama si esta misma pareja ya existía
     listaRamas = listaRamas.filter(r => !(r.hombre === hombre && r.mujer === mujer));
-
-    listaRamas.push({
-        id: `rama_${Date.now()}`,
-        hombre,
-        mujer,
-        colorId
-    });
+    listaRamas.push({ id: `rama_${Date.now()}`, hombre, mujer, colorId });
 
     document.getElementById("rama-color-seleccionado").value = "";
+    guardarEnMemoriaLocal();
     refrescarTodo();
-    alert(`¡Rama asignada! ${hombre} + ${mujer} ahora tienen su color exclusivo.`);
+    alert(`¡Rama asignada correctamente!`);
 }
 
 function eliminarRama(id) {
     if (confirm("¿Deseas eliminar esta rama y liberar su color del candado?")) {
         listaRamas = listaRamas.filter(r => r.id !== id);
+        guardarEnMemoriaLocal();
         refrescarTodo();
     }
 }
@@ -341,7 +326,6 @@ function renderizarListaRamasActivas() {
     });
 }
 
-// Selectores de Cabezas de Familia
 function poblarSelectoresCabezas() {
     const cabezas = listaPersonas.filter(p => p.sexo === 'M');
     const selectArbol = document.getElementById("select-cabeza-arbol");
@@ -368,7 +352,6 @@ function poblarSelectoresCabezas() {
     }
 }
 
-// Vista en Columnas
 function renderizarColumnasSeleccionada() {
     const contenedor = document.getElementById("columnas-net");
     const selectColumna = document.getElementById("select-cabeza-columna");
@@ -406,7 +389,6 @@ function renderizarColumnasSeleccionada() {
     contenedor.appendChild(bloque);
 }
 
-// Arrastre del lienzo
 function configurarArrastreLienzo() {
     const lienzo = document.getElementById("canvas-arbol");
     let estaArrastrando = false, inicioX, inicioY, scrollLeft, scrollTop;
@@ -431,7 +413,6 @@ function configurarArrastreLienzo() {
     });
 }
 
-// Filtros
 function filtrarTarjetas() {
     const texto = document.getElementById("buscador").value.toLowerCase();
     const genFiltro = document.getElementById("filtro-generacion").value;
@@ -445,7 +426,6 @@ function filtrarTarjetas() {
     renderizarArbol(filtrados);
 }
 
-// CRUD de Familiares
 function guardarFamiliar(event) {
     event.preventDefault();
     const editId = document.getElementById("edit-id").value;
@@ -470,8 +450,9 @@ function guardarFamiliar(event) {
     }
 
     limpiarFormulario();
+    guardarEnMemoriaLocal();
     refrescarTodo();
-    alert("¡Familiar guardado! Recuerda hacer clic en 'Exportar JSON' para respaldar tus datos.");
+    alert("¡Familiar guardado con éxito y respaldado en tu navegador!");
 }
 
 function actualizarListaAdmin() {
@@ -513,6 +494,7 @@ function cargarParaEditar(id) {
 function eliminarFamiliar(id) {
     if (confirm("¿Estás seguro de eliminar a este familiar?")) {
         listaPersonas = listaPersonas.filter(p => p.id !== id);
+        guardarEnMemoriaLocal();
         refrescarTodo();
     }
 }
