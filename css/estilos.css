@@ -1,28 +1,23 @@
 :root {
-    /* Nueva paleta greco-romana */
-    --bg-papiro: #f4f1ea; /* Fondo suave para tarjetas */
-    --border-antique: #c4a77d; /* Tono bronce/oro envejecido para bordes */
-    --primary-classic: #1a365d; /* Azul oscuro clásico para títulos */
-    --accent-myth: #8c1c13; /* Rojo pompeyano para acentos */
-    --text-main: #333333;
-    --text-muted: #555555;
-    
-    /* Imagen de fondo generada: Mármol antiguo con relieves sutiles */
-    --bg-marmol-url: url('https://i.imgur.com/vHqVp1A.jpg'); /* Enlace temporal, generaré la imagen final después */
+    --bg-papiro: #fbf9f4;
+    --border-antique: #b8976a;
+    --primary-classic: #1a365d;
+    --accent-myth: #8c1c13;
+    --text-main: #2d2d2d;
+    --text-muted: #666666;
 }
 
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    font-family: 'Crimson Text', serif; /* Fuente serif clásica para evocar grabados */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 body {
-    background-color: #eae3d2; /* Color base cálido */
-    background-image: var(--bg-marmol-url); /* Imagen de mármol con relieves */
-    background-size: cover;
-    background-attachment: fixed;
+    background-color: #e6dfd1;
+    /* Fondo clásico tipo pergamino/mármol limpio mediante degradados CSS */
+    background-image: radial-gradient(circle, #f4f0e6 0%, #d8cebc 100%);
     color: var(--text-main);
     overflow: hidden;
     height: 100vh;
@@ -30,17 +25,17 @@ body {
     flex-direction: column;
 }
 
-/* Cabecera y Pestañas con diseño clásico */
+/* Cabecera y Pestañas */
 .app-header {
-    height: 70px;
-    background: rgba(255, 255, 255, 0.9); /* Fondo semi-transparente para ver el mármol */
-    border-bottom: 3px solid var(--border-antique); /* Borde de bronce */
+    height: 75px;
+    background: #ffffff;
+    border-bottom: 3px solid var(--border-antique);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 24px;
+    padding: 0 30px;
     z-index: 10;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
 }
 
 .brand {
@@ -49,122 +44,113 @@ body {
     gap: 12px;
 }
 
-.brand-icon { font-size: 1.6rem; color: var(--accent-myth); }
+.brand-icon { font-size: 1.8rem; }
 .app-header h1 { 
-    font-size: 1.3rem; 
+    font-size: 1.25rem; 
     font-weight: 700; 
     color: var(--primary-classic); 
-    text-transform: uppercase; /* Estilo de inscripción */
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
 }
 
+/* Pestañas grandes y estilizadas */
 .nav-tabs {
     display: flex;
-    gap: 8px;
-    background: #e0d9c5;
-    padding: 4px;
-    border-radius: 20px; /* Bordes redondeados más suaves */
+    gap: 12px;
+    background: #eee8dc;
+    padding: 6px;
+    border-radius: 12px;
+    border: 1px solid var(--border-antique);
 }
 
 .tab-btn {
     background: transparent;
     border: none;
-    padding: 8px 18px;
-    font-size: 0.95rem;
+    padding: 10px 24px;
+    font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
-    border-radius: 16px;
+    border-radius: 8px;
     color: var(--text-muted);
-    transition: all 0.3s;
+    transition: all 0.2s ease;
 }
 
 .tab-btn.active {
-    background: #ffffff;
-    color: var(--primary-classic);
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    background: var(--primary-classic);
+    color: #ffffff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
 }
 
 .btn-exportar {
-    background: var(--accent-myth); /* Rojo pompeyano */
+    background: var(--accent-myth);
     color: white;
-    border: 2px solid #661109; /* Borde más oscuro */
-    padding: 10px 16px;
-    border-radius: 6px;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 8px;
     font-weight: 700;
     cursor: pointer;
-    text-transform: uppercase;
-    font-size: 0.85rem;
+    font-size: 0.9rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-.btn-exportar:hover { background: #661109; }
+.btn-exportar:hover { background: #6b150e; }
 
-/* Control de Vistas */
+/* Vistas */
 .vista-activa { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
 .vista-oculta { display: none !important; }
 
-/* Filtros con estética de papiro */
+/* Filtros */
 .barra-filtros {
-    background: rgba(244, 241, 234, 0.9); /* Tono papiro semi-transparente */
-    padding: 14px 24px;
+    background: rgba(255, 255, 255, 0.85);
+    padding: 16px 30px;
     border-bottom: 2px solid var(--border-antique);
     display: flex;
     gap: 16px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
 .barra-filtros input, .barra-filtros select {
     padding: 10px 14px;
     border: 1px solid var(--border-antique);
-    border-radius: 4px;
+    border-radius: 6px;
     font-size: 0.95rem;
     background: #fff;
-    color: var(--text-main);
 }
 
-.barra-filtros input { flex: 1; max-width: 450px; }
+.barra-filtros input { flex: 1; max-width: 400px; }
 
 /* Lienzo */
 #canvas-arbol {
     flex: 1;
     position: relative;
     overflow: auto;
-    background: transparent; /* Ver el fondo del body */
-    padding: 50px;
+    padding: 40px;
 }
 
 #arbol-net {
     display: flex;
-    gap: 40px;
+    gap: 30px;
     align-items: flex-start;
     flex-wrap: wrap;
 }
 
-/* Tarjetas Familiares Estilo Papiro/Lápida sutil */
+/* Tarjetas Familiares */
 .tarjeta-familiar {
-    background: var(--bg-papiro); /* Tono crema papiro */
-    border: 3px solid var(--border-antique); /* Borde grueso de bronce/oro */
-    border-radius: 8px; /* Bordes menos redondeados */
+    background: var(--bg-papiro);
+    border: 2px solid var(--border-antique);
+    border-radius: 10px;
     width: 280px;
     padding: 18px;
-    box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.06);
     position: relative;
-    transition: transform 0.3s;
 }
 
-.tarjeta-familiar:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.15);
-}
+/* Colores de Rama */
+.rama-neutro { border-color: #cbd5e1; background: #ffffff; }
+.rama-rojo { border-color: #dc2626; background-color: #fef2f2; }
+.rama-azul { border-color: #2563eb; background-color: #eff6ff; }
+.rama-amarillo { border-color: #d97706; background-color: #fffbeb; }
+.rama-verde { border-color: #16a34a; background-color: #f0fdf4; }
+.rama-morado { border-color: #9333ea; background-color: #faf5ff; }
 
-/* Colores de Rama actualizados para el nuevo fondo */
-.rama-neutro { border-color: var(--border-antique); background: var(--bg-papiro); }
-.rama-rojo { border-color: #b91c1c; background-color: #fff1f2; }
-.rama-azul { border-color: #1e40af; background-color: #eff6ff; }
-.rama-amarillo { border-color: #b45309; background-color: #fffbeb; }
-.rama-verde { border-color: #15803d; background-color: #f0fdf4; }
-.rama-morado { border-color: #7e22ce; background-color: #faf5ff; }
-
-/* Doble Rama 50% / 50% con el nuevo estilo de borde */
 .rama-50-50 {
     border-image: linear-gradient(135deg, var(--color-1), var(--color-2)) 1;
     background: linear-gradient(135deg, var(--bg-1), var(--bg-2));
@@ -173,52 +159,46 @@ body {
 .card-header {
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 12px;
     margin-bottom: 12px;
 }
 
 .avatar {
-    width: 48px;
-    height: 48px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
-    background: #e0d9c5;
-    border: 2px solid var(--border-antique);
+    background: #e2dccb;
+    border: 1px solid var(--border-antique);
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 700;
     color: var(--primary-classic);
-    font-size: 1rem;
-    text-transform: uppercase;
+    font-size: 0.95rem;
 }
 
-.info-principal h3 { 
-    font-size: 1rem; 
-    font-weight: 700; 
-    color: var(--primary-classic); 
-    text-transform: capitalize;
-}
-.info-principal p { font-size: 0.9rem; color: var(--text-muted); }
+.info-principal h3 { font-size: 1rem; font-weight: 700; color: var(--primary-classic); }
+.info-principal p { font-size: 0.85rem; color: var(--text-muted); }
 
 .tags-gen {
     display: flex;
-    gap: 7px;
-    margin-bottom: 8px;
+    gap: 6px;
+    margin-bottom: 10px;
     flex-wrap: wrap;
 }
 
 .tag {
     font-size: 0.75rem;
     padding: 3px 8px;
-    border-radius: 10px; /* Etiquetas más redondeadas sutiles */
-    background: #e0d9c5;
+    border-radius: 6px;
+    background: #eee8dc;
     border: 1px solid var(--border-antique);
     font-weight: 600;
 }
 
-.tag.m { background: #e0f2fe; color: #0369a1; border-color: #7dd3fc; }
-.tag.f { background: #fce7f3; color: #be185d; border-color: #f9a8d4; }
-.tag.nacionalidad { background: #fef3c7; color: #92400e; border-color: #fcd34d; }
+.tag.m { background: #e0f2fe; color: #0369a1; border-color: #bae6fd; }
+.tag.f { background: #fce7f3; color: #be185d; border-color: #fbcfe8; }
+.tag.nacionalidad { background: #fef3c7; color: #92400e; border-color: #fde68a; }
 
 .edad-aprox {
     font-size: 0.85rem;
@@ -228,110 +208,172 @@ body {
 }
 
 .seccion-parejas, .seccion-hijos {
-    border-top: 1px solid rgba(0,0,0,0.1);
-    padding-top: 10px;
-    margin-top: 10px;
-    font-size: 0.85rem;
+    border-top: 1px solid rgba(0,0,0,0.08);
+    padding-top: 8px;
+    margin-top: 8px;
+    font-size: 0.82rem;
 }
 
 .seccion-parejas h4, .seccion-hijos h4 {
     font-size: 0.75rem;
     text-transform: uppercase;
-    color: var(--accent-myth); /* Tono rojo pompeyano */
-    margin-bottom: 5px;
-    letter-spacing: 0.5px;
+    color: var(--accent-myth);
+    margin-bottom: 4px;
+    font-weight: 700;
 }
 
 .lista-nombres li {
     list-style: none;
-    padding: 2px 0;
-    color: var(--primary-classic);
+    padding: 1px 0;
+    color: #1d4ed8;
 }
 
-/* Panel Administrador con la nueva estética */
+/* Panel Administrador */
 .admin-container {
     flex: 1;
     overflow-y: auto;
     padding: 40px;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 40px;
-    background: transparent; /* Ver el fondo del body */
+    gap: 30px;
 }
 
 .admin-form-card, .admin-list-card {
-    background: rgba(255, 255, 255, 0.95); /* Semi-transparente */
+    background: #ffffff;
     border: 2px solid var(--border-antique);
     border-radius: 10px;
-    padding: 30px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    padding: 25px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+    height: fit-content;
 }
 
 .admin-form-card h2, .admin-list-card h3 {
-    font-size: 1.25rem;
-    margin-bottom: 25px;
+    font-size: 1.15rem;
+    margin-bottom: 20px;
     color: var(--primary-classic);
     text-transform: uppercase;
-    letter-spacing: 1px;
 }
 
 .form-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 20px;
-    margin-bottom: 20px;
+    gap: 16px;
+    margin-bottom: 16px;
 }
 
 .form-group {
-    margin-bottom: 20px;
+    margin-bottom: 16px;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
 }
 
 .form-group label {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     font-weight: 700;
-    color: var(--text-main);
+    color: #374151;
 }
 
 .form-group input, .form-group select {
-    padding: 10px 14px;
-    border: 1px solid var(--border-antique);
-    border-radius: 4px;
-    font-size: 0.95rem;
+    padding: 9px 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-size: 0.9rem;
 }
 
 .bloque-colores {
-    background: #fdfcf8;
-    border: 1px solid var(--border-antique);
-    padding: 16px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    padding: 14px;
     border-radius: 6px;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
+}
+
+.oculto { display: none !important; }
+
+.form-botones {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
 }
 
 .btn-guardar {
-    background: #166534; /* Verde más sobrio */
+    background: #16a34a;
     color: white;
-    padding: 12px 24px;
-    text-transform: uppercase;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 700;
+    cursor: pointer;
 }
 
-/* Lista de Admin actualizada */
+.btn-limpiar {
+    background: #f1f5f9;
+    color: #334155;
+    border: 1px solid #cbd5e1;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* Lista de Registros Actuales mejorada */
+#lista-admin-registros {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 450px;
+    overflow-y: auto;
+}
+
 .admin-item-row {
-    background: #fdfcf8;
-    border-color: var(--border-antique);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    background: #fcfbfa;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 0.9rem;
 }
 
-.btn-editar-item { background: #dbeafe; color: #1e40af; }
-.btn-eliminar-item { background: #fee2e2; color: #b91c1c; }
+.admin-item-botones {
+    display: flex;
+    gap: 6px;
+}
 
-/* Footer clásico */
+.admin-item-botones button {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    border: none;
+    transition: background 0.2s;
+}
+
+.btn-editar-item { background: #e0f2fe; color: #0369a1; }
+.btn-editar-item:hover { background: #bae6fd; }
+
+.btn-eliminar-item { background: #fee2e2; color: #b91c1c; }
+.btn-eliminar-item:hover { background: #fecaca; }
+
+/* Footer */
 .app-footer {
     height: 40px;
-    background: rgba(255, 255, 255, 0.9);
+    background: #ffffff;
     border-top: 2px solid var(--border-antique);
+    display: flex;
+    align-items: center;
+    padding: 0 30px;
+    font-size: 0.8rem;
     color: var(--text-muted);
+    gap: 20px;
 }
 
-.punto.doble { background: linear-gradient(135deg, var(--accent-myth), #1a365d); }
+.leyenda-item { display: flex; align-items: center; gap: 6px; }
+.punto { width: 8px; height: 8px; border-radius: 50%; }
+.punto.masculino { background: #cbd5e1; }
+.punto.femenino { background: #2563eb; }
+.punto.doble { background: linear-gradient(135deg, #2563eb, #dc2626); }
+.instruccion { margin-left: auto; }
