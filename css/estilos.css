@@ -405,25 +405,44 @@ body {
     border-left: 3px solid var(--primary-classic);
 }
 
-/* Gestión de Ramas (Cuadrícula ampliada para 36 colores) */
-#vista-ramas { flex: 1; overflow-y: auto; padding: 35px; }
-.ramas-container { display: grid; grid-template-columns: 1.5fr 1fr; gap: 30px; }
+/* Gestión de Ramas (Estirado vertical unificado) */
+#vista-ramas { 
+    flex: 1; 
+    overflow-y: auto; 
+    padding: 35px; 
+}
+
+.ramas-container { 
+    display: grid; 
+    grid-template-columns: 1.5fr 1fr; 
+    gap: 30px; 
+    align-items: stretch; /* Estira ambos paneles de forma uniforme */
+}
+
 .ramas-panel-card {
     background: #ffffff;
     border: 2px solid var(--border-antique);
     border-radius: 10px;
     padding: 24px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.06);
-    height: fit-content;
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* Ocupa toda la altura vertical disponible en bloque */
 }
-.ramas-panel-card h2, .ramas-panel-card h3 { font-size: 1.1rem; color: var(--primary-classic); margin-bottom: 14px; text-transform: uppercase; }
+
+.ramas-panel-card h2, .ramas-panel-card h3 { 
+    font-size: 1.1rem; 
+    color: var(--primary-classic); 
+    margin-bottom: 14px; 
+    text-transform: uppercase; 
+}
 
 .paleta-grid {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
     gap: 8px;
     margin-top: 8px;
-    max-height: 380px;
+    max-height: 480px;
     overflow-y: auto;
     padding-right: 4px;
 }
@@ -452,7 +471,16 @@ body {
     cursor: not-allowed;
 }
 
-.lista-ramas-box { display: flex; flex-direction: column; gap: 10px; max-height: 380px; overflow-y: auto; }
+.lista-ramas-box { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 10px; 
+    flex: 1; /* Se estira verticalmente rellenando el panel */
+    max-height: 520px; 
+    overflow-y: auto; 
+    padding-right: 4px;
+}
+
 .rama-item-row {
     display: flex;
     justify-content: space-between;
