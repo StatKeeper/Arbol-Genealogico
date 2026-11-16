@@ -133,7 +133,6 @@ body {
     position: relative;
 }
 
-/* División 50% Arriba / 50% Abajo (Horizontal) */
 .tarjeta-50-50 {
     background: linear-gradient(180deg, var(--bg-top) 50%, var(--bg-bottom) 50%);
     border-top: 3px solid var(--border-top);
@@ -195,33 +194,35 @@ body {
 .seccion-parejas h4 { font-size: 0.7rem; text-transform: uppercase; color: var(--accent-myth); margin-bottom: 3px; font-weight: 700; }
 .lista-nombres li { list-style: none; padding: 1px 0; color: #1e3a8a; font-weight: 500; }
 
-/* Selector múltiple alfabético */
-.selector-multiple-box {
+/* Selector múltiple distribuido en columnas (Grid adaptable) */
+.selector-multiple-columnas {
     border: 1px solid #cbd5e1;
     border-radius: 6px;
     background: #fff;
-    max-height: 140px;
+    max-height: 160px;
     overflow-y: auto;
-    padding: 8px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
+    padding: 10px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr)); /* Múltiples columnas automáticas */
+    gap: 6px 12px;
 }
 
 .checkbox-item-label {
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 0.88rem;
+    font-size: 0.85rem;
     color: #334155;
     cursor: pointer;
-    padding: 3px 6px;
+    padding: 4px 6px;
     border-radius: 4px;
     transition: background 0.15s;
+    background: #fdfcf8;
+    border: 1px solid #eee8dc;
 }
 
 .checkbox-item-label:hover { background: #f1f5f9; }
-.checkbox-item-label input { cursor: pointer; width: 16px; height: 16px; }
+.checkbox-item-label input { cursor: pointer; width: 15px; height: 15px; }
 
 /* Vista en Columnas */
 #vista-columnas { flex: 1; overflow: auto; padding: 40px; }
