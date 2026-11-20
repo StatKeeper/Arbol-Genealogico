@@ -725,10 +725,49 @@ function poblarSelectoresRamas() {
     });
 }
 
+function asignarColorACuadroVacio(idColor) {
+    const col = PALETA_COLORES.find(c => c.id === idColor);
+    if (!col) return;
+
+    const hexIngresado = prompt(
+        `Asignar color a C${col.num} (ej. #16a34a):`,
+        "#2563eb"
+    );
+    if (!hexIngresado) return;
+
+    const hexLimpio = hexIngresado.trim();
+    if (!/^#[0-9a-fA-F]{6}$/.test(hexLimpio)) {
+        alert("Ingresa un código hexadecimal válido de 6 dígitos, por ejemplo: #2563eb");
+        return;
+    }
+
+    const nombreColor = prompt("Nombre para este color (opcional):", `Color ${col.num}`) || `Color ${col.num}`;
+
+    col.nombre = nombreColor.trim();
+    col.borde = hexLimpio;
+    col.fondo = `${hexLimpio}25`;
+    col.texto = "#111827";
+    col.tipo = "sólido";
+    col.vacio = false;
+
+    const inpColor = document.getElementById("rama-color-seleccionado");
+    if (inpColor) inpColor.value = col.id;
+
+    guardarEnMemoriaLocal();
+    renderizarPaletaColores();
+}
+
 function renderizarPaletaColores() {
     const grid = document.getElementById("paleta-colores-grid");
     if (!grid) return;
     grid.innerHTML = "";
+
+    const esMovil = window.innerWidth <= 768;
+    grid.style.display = "grid";
+    grid.style.gridTemplateColumns = esMovil
+        ? "repeat(5, minmax(0, 1fr))"
+        : "repeat(10, minmax(0, 1fr))";
+    grid.style.gap = "5px";
 
     const coloresUsados = listaRamas.map(r => r.colorId);
     const seleccionadoActual = document.getElementById("rama-color-seleccionado")?.value || "";
@@ -738,23 +777,56 @@ function renderizarPaletaColores() {
         const swatch = document.createElement("div");
         swatch.className = `color-swatch ${estaUsado ? 'bloqueado' : ''} ${seleccionadoActual === col.id ? 'seleccionado' : ''}`;
 
-        if (estaUsado) {
-            swatch.innerHTML = `<span>🔒</span><span>C${col.num}</span><small>Usado</small>`;
+        swatch.style.minHeight = "42px";
+        swatch.style.padding = "3px 4px";
+        swatch.style.borderWidth = "2px";
+        swatch.style.borderStyle = col.vacio ? "dashed" : "solid";
+        swatch.style.borderRadius = "6px";
+        swatch.style.position = "relative";
+        swatch.style.display = "flex";
+        swatch.style.flexDirection = "column";
+        swatch.style.alignItems = "center";
+        swatch.style.justifyContent = "center";
+        swatch.style.fontSize = "0.7rem";
+        swatch.style.lineHeight = "1.1";
+        swatch.style.overflow = "hidden";
+
+        if (col.vacio) {
+            swatch.style.background = "transparent";
+            swatch.style.borderColor = "#cbd5e1";
+            swatch.style.color = "#64748b";
+            swatch.style.cursor = "pointer";
+            swatch.title = `C${col.num} disponible — haz clic para asignarle un color`;
+            swatch.innerHTML = `<span style="font-weight:700;">C${col.num}</span><small style="font-size:0.6rem;">+ Color</small>`;
+            swatch.onclick = () => asignarColorACuadroVacio(col.id);
         } else {
             swatch.style.background = col.fondo;
             swatch.style.borderColor = col.borde;
             swatch.style.color = col.texto;
-            swatch.innerHTML = `<span>C${col.num}</span><small>${col.nombre}</small>`;
-            swatch.onclick = () => {
-                const inpColor = document.getElementById("rama-color-seleccionado");
-                if (inpColor) inpColor.value = col.id;
-                renderizarPaletaColores();
-            };
+            swatch.title = `C${col.num} - ${col.nombre}${estaUsado ? ' (En uso)' : ''}`;
+
+            const candadoBadge = estaUsado
+                ? `<span style="position:absolute; top:2px; right:3px; font-size:0.6rem;" title="Color en uso">🔒</span>`
+                : "";
+
+            swatch.innerHTML = `${candadoBadge}<span style="font-weight:700;">C${col.num}</span><small style="font-size:0.58rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%;">${col.nombre}</small>`;
+
+            if (!estaUsado) {
+                swatch.style.cursor = "pointer";
+                swatch.onclick = () => {
+                    const inpColor = document.getElementById("rama-color-seleccionado");
+                    if (inpColor) inpColor.value = col.id;
+                    renderizarPaletaColores();
+                };
+            } else {
+                swatch.style.cursor = "not-allowed";
+                swatch.style.opacity = "0.92";
+            }
         }
+
         grid.appendChild(swatch);
     });
 }
-
 function seleccionarColorPersonalizado(hex) {
     const inp = document.getElementById("rama-color-seleccionado");
     if (inp) inp.value = hex;
