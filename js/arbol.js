@@ -757,29 +757,72 @@ function asignarColorACuadroVacio(idColor) {
     renderizarPaletaColores();
 }
 
+function editarColorPaleta(idColor) {
+    const col = PALETA_COLORES.find(c => c.id === idColor);
+    if (!col) return;
+
+    const hexActual = /^#[0-9a-fA-F]{6}$/.test(col.borde) ? col.borde : "#dc2626";
+    const hexIngresado = prompt(
+        `Editar color de C${col.num} (${col.nombre}) — ingresa hex de 6 dígitos:`,
+        hexActual
+    );
+    if (!hexIngresado) return;
+
+    const hexLimpio = hexIngresado.trim();
+    if (!/^#[0-9a-fA-F]{6}$/.test(hexLimpio)) {
+        alert("Ingresa un código hexadecimal válido de 6 dígitos, por ejemplo: #dc2626");
+        return;
+    }
+
+    const nombreIngresado = prompt("Editar nombre del color:", col.nombre);
+    if (nombreIngresado && nombreIngresado.trim()) {
+        col.nombre = nombreIngresado.trim();
+    }
+
+    col.borde = hexLimpio;
+    col.fondo = `${hexLimpio}25`;
+    col.texto = "#111827";
+    col.tipo = "sólido";
+    col.vacio = false;
+
+    if (typeof guardarEnMemoriaLocal === "function") {
+        guardarEnMemoriaLocal();
+    }
+    if (typeof renderizarLeyendaRamas === "function") {
+        renderizarLeyendaRamas();
+    }
+    if (typeof renderizarArbol === "function") {
+        renderizarArbol();
+    }
+    renderizarPaletaColores();
+}
+
 function renderizarPaletaColores() {
     const grid = document.getElementById("paleta-colores-grid");
     if (!grid) return;
     grid.innerHTML = "";
 
     const esMovil = window.innerWidth <= 768;
-    grid.style.display = "grid";
-    grid.style.gridTemplateColumns = esMovil
-        ? "repeat(5, minmax(0, 1fr))"
-        : "repeat(10, minmax(0, 1fr))";
-    grid.style.gap = "5px";
+    grid.style.setProperty("display", "grid", "important");
+    grid.style.setProperty(
+        "grid-template-columns",
+        esMovil ? "repeat(5, minmax(0, 1fr))" : "repeat(10, minmax(0, 1fr))",
+        "important"
+    );
+    grid.style.setProperty("gap", "5px", "important");
 
     const coloresUsados = listaRamas.map(r => r.colorId);
     const seleccionadoActual = document.getElementById("rama-color-seleccionado")?.value || "";
 
     PALETA_COLORES.forEach(col => {
         const estaUsado = coloresUsados.includes(col.id);
+        const estaSeleccionado = seleccionadoActual === col.id;
         const swatch = document.createElement("div");
-        swatch.className = `color-swatch ${estaUsado ? 'bloqueado' : ''} ${seleccionadoActual === col.id ? 'seleccionado' : ''}`;
+        swatch.className = `color-swatch ${estaUsado ? 'bloqueado' : ''} ${estaSeleccionado ? 'seleccionado' : ''}`;
 
         swatch.style.minHeight = "42px";
         swatch.style.padding = "3px 4px";
-        swatch.style.borderWidth = "2px";
+        swatch.style.borderWidth = estaSeleccionado ? "3px" : "2px";
         swatch.style.borderStyle = col.vacio ? "dashed" : "solid";
         swatch.style.borderRadius = "6px";
         swatch.style.position = "relative";
@@ -790,38 +833,48 @@ function renderizarPaletaColores() {
         swatch.style.fontSize = "0.7rem";
         swatch.style.lineHeight = "1.1";
         swatch.style.overflow = "hidden";
+        swatch.style.cursor = "pointer";
 
         if (col.vacio) {
-            swatch.style.background = "transparent";
-            swatch.style.borderColor = "#cbd5e1";
-            swatch.style.color = "#64748b";
-            swatch.style.cursor = "pointer";
-            swatch.title = `C${col.num} disponible — haz clic para asignarle un color`;
+            swatch.style.setProperty("background", "transparent", "important");
+            swatch.style.setProperty("border-color", estaSeleccionado ? "#2563eb" : "#cbd5e1", "important");
+            swatch.style.setProperty("color", "#64748b", "important");
+            swatch.title = `C${col.num} disponible — clic para asignar color`;
             swatch.innerHTML = `<span style="font-weight:700;">C${col.num}</span><small style="font-size:0.6rem;">+ Color</small>`;
             swatch.onclick = () => asignarColorACuadroVacio(col.id);
         } else {
-            swatch.style.background = col.fondo;
-            swatch.style.borderColor = col.borde;
-            swatch.style.color = col.texto;
-            swatch.title = `C${col.num} - ${col.nombre}${estaUsado ? ' (En uso)' : ''}`;
+            swatch.style.setProperty("background", col.fondo, "important");
+            swatch.style.setProperty("border-color", estaSeleccionado ? "#111827" : col.borde, "important");
+            swatch.style.setProperty("color", col.texto, "important");
+            swatch.style.setProperty("opacity", "1", "important");
+            swatch.title = `C${col.num} - ${col.nombre}${estaUsado ? ' (En uso — clic para seleccionar, doble clic o ✏️ para editar)' : ' (Clic para seleccionar, ✏️ para editar)'}`;
 
             const candadoBadge = estaUsado
-                ? `<span style="position:absolute; top:2px; right:3px; font-size:0.6rem;" title="Color en uso">🔒</span>`
+                ? `<span style="position:absolute; top:2px; left:3px; font-size:0.58rem;" title="Color en uso">🔒</span>`
                 : "";
 
-            swatch.innerHTML = `${candadoBadge}<span style="font-weight:700;">C${col.num}</span><small style="font-size:0.58rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%;">${col.nombre}</small>`;
+            const editBadge = `<span data-editar-color="${col.id}" style="position:absolute; top:1px; right:3px; font-size:0.62rem; cursor:pointer;" title="Editar color">✏️</span>`;
 
-            if (!estaUsado) {
-                swatch.style.cursor = "pointer";
-                swatch.onclick = () => {
-                    const inpColor = document.getElementById("rama-color-seleccionado");
-                    if (inpColor) inpColor.value = col.id;
+            swatch.innerHTML = `${candadoBadge}${editBadge}<span style="font-weight:700;">C${col.num}</span><small style="font-size:0.58rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%;">${col.nombre}</small>`;
+
+            swatch.onclick = (e) => {
+                const inpColor = document.getElementById("rama-color-seleccionado");
+                if (inpColor) inpColor.value = col.id;
+
+                if (e.target && e.target.closest && e.target.closest(`[data-editar-color="${col.id}"]`)) {
+                    e.stopPropagation();
                     renderizarPaletaColores();
-                };
-            } else {
-                swatch.style.cursor = "not-allowed";
-                swatch.style.opacity = "0.92";
-            }
+                    editarColorPaleta(col.id);
+                    return;
+                }
+
+                renderizarPaletaColores();
+            };
+
+            swatch.ondblclick = (e) => {
+                e.stopPropagation();
+                editarColorPaleta(col.id);
+            };
         }
 
         grid.appendChild(swatch);
