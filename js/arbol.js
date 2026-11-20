@@ -311,6 +311,42 @@ function obtenerEstiloPersona(persona) {
 
     const tienePadreRegistrado = listaPersonas.some(p => p.hijos && p.hijos.includes(nombreCompleto));
     if (persona.sexo === 'M' && !tienePadreRegistrado) {
+        if (persona.parejas && persona.parejas.length > 0) {
+            const nombrePrimeraEsposa = persona.parejas[0];
+            const ramaEsposa = listaRamas.find(r => r.mujer === nombrePrimeraEsposa || r.hombre === nombrePrimeraEsposa);
+            if (ramaEsposa) {
+                const colorEsposaObj = obtenerObjetoColorPorIdOPersonalizado(ramaEsposa.colorId);
+                if (colorEsposaObj) {
+                    return {
+                        tipo: 'unico',
+                        color: colorEsposaObj,
+                        etiqueta: `Color ${colorEsposaObj.num} - ${colorEsposaObj.nombre}`,
+                        colorNombre: colorEsposaObj.texto
+                    };
+                }
+            }
+
+            const parejaObj = listaPersonas.find(p => `${p.nombre} ${p.apellido || ''}`.trim() === nombrePrimeraEsposa);
+            if (parejaObj) {
+                const estiloPareja = obtenerEstiloPersona(parejaObj);
+                if (estiloPareja.tipo === 'unico') {
+                    return {
+                        tipo: 'unico',
+                        color: estiloPareja.color,
+                        etiqueta: estiloPareja.etiqueta,
+                        colorNombre: estiloPareja.color.texto
+                    };
+                }
+                if (estiloPareja.tipo === '50-50') {
+                    return {
+                        tipo: 'unico',
+                        color: estiloPareja.top,
+                        etiqueta: `Color ${estiloPareja.top.num} - ${estiloPareja.top.nombre}`,
+                        colorNombre: estiloPareja.top.texto
+                    };
+                }
+            }
+        }
         return { tipo: 'neutro', colorNombre: '#1d4ed8' };
     }
 
