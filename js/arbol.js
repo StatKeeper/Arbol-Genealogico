@@ -580,7 +580,12 @@ function obtenerEstiloPersona(persona, contexto = null) {
 
     const ramasDirectas = listaRamas.filter(r => r.mujer === nombreCompleto || r.hombre === nombreCompleto);
     let colorPropioObj = null;
-    if (ramasDirectas.length > 0) {
+    const ramaContexto = (contexto && contexto.rol === 'pareja' && contexto.cabeza)
+            ? listaRamas.find(r => (r.hombre === contexto.cabeza && r.mujer === nombreCompleto) || (r.mujer === contexto.cabeza && r.hombre === nombreCompleto))
+            : null;
+        if (ramaContexto) {
+            colorPropioObj = obtenerObjetoColorPorIdOPersonalizado(ramaContexto.colorId);
+        } else if (ramasDirectas.length > 0) {
         colorPropioObj = obtenerObjetoColorPorIdOPersonalizado(ramasDirectas[0].colorId);
     } else if (persona.sexo === 'F' && persona.parejas && persona.parejas.length > 0) {
         for (const nombrePareja of persona.parejas) {
