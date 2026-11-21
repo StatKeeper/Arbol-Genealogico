@@ -530,7 +530,7 @@ function obtenerEstiloPersona(persona, contexto = null) {
 
             const parejaObj = listaPersonas.find(p => `${p.nombre} ${p.apellido || ''}`.trim() === nombrePrimeraEsposa);
             if (parejaObj) {
-                const estiloPareja = obtenerEstiloPersona(parejaObj);
+                const estiloPareja = obtenerEstiloPersona(parejaObj, contexto);
                 if (estiloPareja.tipo === 'unico') {
                     return {
                         tipo: 'unico',
