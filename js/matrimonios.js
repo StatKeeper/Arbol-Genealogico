@@ -26,3 +26,27 @@ function obtenerIconoPareja(nombreActual, nombrePareja) {
     }
     return '❤';
 }
+function renderizarPestanaMatrimonios() {
+    const contMatrimonios = document.getElementById("lista-matrimonios-vista");
+    const contDescendencia = document.getElementById("lista-parejas-descendencia-vista");
+
+    if (contMatrimonios) {
+        if (!MATRIMONIOS_CONFIRMADOS.length) {
+            contMatrimonios.innerHTML = '<p style="color:#666;">No hay matrimonios confirmados registrados.</p>';
+        } else {
+            contMatrimonios.innerHTML = MATRIMONIOS_CONFIRMADOS.map(([p1, p2]) =>
+                `<div class="rama-item"><span style="color:#d4af37;">💍</span> <strong>${p1}</strong> &amp; <strong>${p2}</strong></div>`
+            ).join("");
+        }
+    }
+
+    if (contDescendencia) {
+        if (!PAREJAS_DESCENDENCIA.length) {
+            contDescendencia.innerHTML = '<p style="color:#666;">No hay parejas por descendencia registradas.</p>';
+        } else {
+            contDescendencia.innerHTML = PAREJAS_DESCENDENCIA.map(([p1, p2]) =>
+                `<div class="rama-item">❤ <strong>${p1}</strong> &amp; <strong>${p2}</strong></div>`
+            ).join("");
+        }
+    }
+}
