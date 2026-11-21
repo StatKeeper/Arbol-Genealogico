@@ -674,7 +674,7 @@ function crearElementoTarjeta(persona, contexto = null) {
         <div class="seccion-parejas">
             <h4>Pareja(s):</h4>
             <ul class="lista-nombres">
-               ${persona.parejas?.length ? persona.parejas.map((p, idx) => `<li><span style="${idx === 0 ? 'color: #d4af37;' : ''}">${idx === 0 ? '💍' : '❤'}</span> ${p}</li>`).join('') : '<li>Sin pareja registrada</li>'}
+              ${persona.parejas?.length ? persona.parejas.map((p, idx) => `<li>${persona.sexo === 'M' && idx === 0 ? '<span style="color: #d4af37;">💍</span>' : '❤'} ${p}</li>`).join('') : '<li>Sin pareja registrada</li>'}
             </ul>
         </div>
     `;
