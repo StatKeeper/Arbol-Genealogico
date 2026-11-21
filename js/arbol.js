@@ -571,7 +571,7 @@ function obtenerEstiloPersona(persona, contexto = null) {
         if (ramaMadre) {
             colorHeredadoObj = obtenerObjetoColorPorIdOPersonalizado(ramaMadre.colorId);
         } else {
-            const estiloMadre = obtenerEstiloPersona(madreBiologica);
+            const estiloMadre = obtenerEstiloPersona(madreBiologica, contexto);
             if (estiloMadre.tipo === 'unico' || estiloMadre.tipo === '50-50') {
                 colorHeredadoObj = estiloMadre.color || estiloMadre.top;
             }
