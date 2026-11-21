@@ -299,7 +299,7 @@ function refrescarTodo() {
 }
 
 function cambiarPestana(pestana) {
-    const tabs = ['arbol', 'columnas', 'ramas', 'admin'];
+    const tabs = ['arbol', 'columnas', 'ramas', 'admin', 'matrimonios'];
     tabs.forEach(t => {
         document.getElementById(`tab-${t}`)?.classList.remove("active");
         document.getElementById(`vista-${t}`)?.classList.add("vista-oculta");
