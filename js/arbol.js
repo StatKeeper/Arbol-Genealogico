@@ -734,7 +734,11 @@ function renderizarArbol(personasAMostrar) {
             }
         });
 
-        const listaParejas = Array.from(nombresParejasSet);
+        const listaParejas = Array.from(nombresParejasSet).sort((a, b) => {
+    const aTieneRamaPrevia = listaRamas.some(r => (r.mujer === a || r.hombre === a) && r.hombre !== nombreCabeza && r.mujer !== nombreCabeza);
+    const bTieneRamaPrevia = listaRamas.some(r => (r.mujer === b || r.hombre === b) && r.hombre !== nombreCabeza && r.mujer !== nombreCabeza);
+    return (aTieneRamaPrevia ? 1 : 0) - (bTieneRamaPrevia ? 1 : 0);
+});
 
         if (listaParejas.length > 0) {
             const unionDiv = document.createElement("div");
