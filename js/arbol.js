@@ -318,6 +318,9 @@ function cambiarPestana(pestana) {
     if (pestana === 'admin') {
         poblarSelectoresParejasHijosAdmin();
     }
+    if (pestana === 'matrimonios') {
+            if (typeof renderizarPestanaMatrimonios === 'function') renderizarPestanaMatrimonios();
+        }
 }
 
 function calcularEdad(anioNacimiento) {
