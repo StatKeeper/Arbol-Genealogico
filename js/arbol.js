@@ -515,7 +515,7 @@ function obtenerEstiloPersona(persona, contexto = null) {
     if (persona.sexo === 'M' && !tienePadreRegistrado) {
         if (persona.parejas && persona.parejas.length > 0) {
             const nombrePrimeraEsposa = persona.parejas[0];
-            const ramaEsposa = listaRamas.find(r => r.mujer === nombrePrimeraEsposa || r.hombre === nombrePrimeraEsposa);
+            const ramaEsposa = listaRamas.find(r => (r.hombre === nombreCompleto && r.mujer === nombrePrimeraEsposa) || r.mujer === nombrePrimeraEsposa || r.hombre === nombrePrimeraEsposa);
             if (ramaEsposa) {
                 const colorEsposaObj = obtenerObjetoColorPorIdOPersonalizado(ramaEsposa.colorId);
                 if (colorEsposaObj) {
