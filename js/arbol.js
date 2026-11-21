@@ -508,7 +508,7 @@ function obtenerObjetoColorPorIdOPersonalizado(colorId) {
     return PALETA_COLORES.find(c => c.id === colorId) || null;
 }
 
-function obtenerEstiloPersona(persona) {
+function obtenerEstiloPersona(persona, contexto = null) {
     const nombreCompleto = `${persona.nombre} ${persona.apellido || ''}`.trim();
 
     const tienePadreRegistrado = listaPersonas.some(p => p.hijos && p.hijos.includes(nombreCompleto));
@@ -618,11 +618,11 @@ function obtenerEstiloPersona(persona) {
     return { tipo: 'neutro', colorNombre: '#be185d' };
 }
 
-function crearElementoTarjeta(persona) {
+function crearElementoTarjeta(persona, contexto = null) {
     const tarjeta = document.createElement("div");
     tarjeta.className = "tarjeta-familiar";
 
-    const estiloInfo = obtenerEstiloPersona(persona);
+    const estiloInfo = obtenerEstiloPersona(persona, contexto);
     let estiloInline = "";
     let badgeHtml = "";
 
@@ -724,7 +724,7 @@ function renderizarArbol(personasAMostrar) {
 
         const padreBox = document.createElement("div");
         padreBox.className = "padre-principal-box";
-        padreBox.appendChild(crearElementoTarjeta(cabeza));
+        padreBox.appendChild(crearElementoTarjeta(cabeza, { rol: 'cabeza', cabeza: nombreCabeza }));
         nucleoDiv.appendChild(padreBox);
 
         const nombresParejasSet = new Set(cabeza.parejas || []);
@@ -753,7 +753,7 @@ function renderizarArbol(personasAMostrar) {
                 colRama.className = "columna-rama-pareja";
 
                 if (parejaObj) {
-                    colRama.appendChild(crearElementoTarjeta(parejaObj));
+                    colRama.appendChild(crearElementoTarjeta(parejaObj, { rol: 'pareja', cabeza: nombreCabeza, pareja: nomPareja }));
                 } else {
                     const placeholder = document.createElement("div");
                     placeholder.className = "tarjeta-familiar";
@@ -807,7 +807,7 @@ function renderizarArbol(personasAMostrar) {
                         renderizados.add(nomHijo);
                         const hijoObj = listaPersonas.find(p => `${p.nombre} ${p.apellido || ''}`.trim() === nomHijo);
                         if (hijoObj) {
-                            contHijos.appendChild(crearElementoTarjeta(hijoObj));
+              contHijos.appendChild(crearElementoTarjeta(hijoObj, { rol: 'hijo', cabeza: nombreCabeza, pareja: nomPareja }));              
                         }
                     });
 
