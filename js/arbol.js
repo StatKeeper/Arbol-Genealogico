@@ -1123,7 +1123,14 @@ function renderizarListaRamasActivas() {
 }
 
 function poblarSelectoresCabezas() {
-    const cabezas = listaPersonas.filter(p => p.sexo === 'M');
+    const cabezas = listaPersonas
+        .filter(p => p.sexo === 'M')
+        .sort((a, b) => {
+            const nomA = `${a.nombre} ${a.apellido || ''}`.trim();
+            const nomB = `${b.nombre} ${b.apellido || ''}`.trim();
+            return nomA.localeCompare(nomB, "es");
+        });
+
     const selectArbol = document.getElementById("select-cabeza-arbol");
     const selectColumna = document.getElementById("select-cabeza-columna");
 
