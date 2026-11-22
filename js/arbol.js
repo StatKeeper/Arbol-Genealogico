@@ -859,17 +859,30 @@ function poblarSelectoresRamas() {
     selHombre.innerHTML = "";
     selMujer.innerHTML = "";
 
-    listaPersonas.filter(p => p.sexo === 'M').forEach(h => {
-        const nom = `${h.nombre} ${h.apellido || ''}`.trim();
-        selHombre.innerHTML += `<option value="${nom}">${nom} (${h.generacion})</option>`;
+    const hombresOrdenados = listaPersonas
+        .filter(p => p.sexo === 'M')
+        .map(h => ({
+            nom: `${h.nombre} ${h.apellido || ''}`.trim(),
+            gen: h.generacion
+        }))
+        .sort((a, b) => a.nom.localeCompare(b.nom, "es"));
+
+    hombresOrdenados.forEach(h => {
+        selHombre.innerHTML += `<option value="${h.nom}">${h.nom} (${h.gen})</option>`;
     });
 
-    listaPersonas.filter(p => p.sexo === 'F').forEach(m => {
-        const nom = `${m.nombre} ${m.apellido || ''}`.trim();
-        selMujer.innerHTML += `<option value="${nom}">${nom} (${m.generacion})</option>`;
+    const mujeresOrdenadas = listaPersonas
+        .filter(p => p.sexo === 'F')
+        .map(m => ({
+            nom: `${m.nombre} ${m.apellido || ''}`.trim(),
+            gen: m.generacion
+        }))
+        .sort((a, b) => a.nom.localeCompare(b.nom, "es"));
+
+    mujeresOrdenadas.forEach(m => {
+        selMujer.innerHTML += `<option value="${m.nom}">${m.nom} (${m.gen})</option>`;
     });
 }
-
 function asignarColorACuadroVacio(idColor) {
     const col = PALETA_COLORES.find(c => c.id === idColor);
     if (!col) return;
