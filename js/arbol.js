@@ -677,7 +677,7 @@ function crearElementoTarjeta(persona, contexto = null) {
         <div class="seccion-parejas">
             <h4>Pareja(s):</h4>
             <ul class="lista-nombres">
-              ${persona.parejas?.length ? persona.parejas.map((p, idx) => `<li>${persona.sexo === 'M' && idx === 0 ? '<span style="color: #d4af37;">💍</span>' : '❤'} ${p}</li>`).join('') : '<li>Sin pareja registrada</li>'}
+              ${persona.parejas?.length ? persona.parejas.map((p) => { const nombreActual = `${persona.nombre || ''} ${persona.apellido || ''}`.trim(); const personaEnLista = (typeof listaPersonas !== 'undefined' && Array.isArray(listaPersonas)) ? listaPersonas.find(item => String(item.id) === String(p) || `${item.nombre || ''} ${item.apellido || ''}`.trim() === String(p).trim()) : null; const nombrePareja = personaEnLista ? `${personaEnLista.nombre || ''} ${personaEnLista.apellido || ''}`.trim() : String(p).trim(); const icono = typeof obtenerIconoPareja === 'function' ? obtenerIconoPareja(nombreActual, nombrePareja) : '❤'; return `<li>${icono} ${nombrePareja}</li>`; }).join('') : '<li>Sin pareja registrada</li>'}
             </ul>
         </div>
     `;
