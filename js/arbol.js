@@ -517,20 +517,22 @@ function obtenerEstiloPersona(persona, contexto = null) {
     const tienePadreRegistrado = listaPersonas.some(p => p.hijos && p.hijos.includes(nombreCompleto));
     if (persona.sexo === 'M' && !tienePadreRegistrado) {
         if (persona.parejas && persona.parejas.length > 0) {
-            const nombrePrimeraEsposa = persona.parejas[0];
-            const ramaEsposa = listaRamas.find(r => (r.hombre === nombreCompleto && r.mujer === nombrePrimeraEsposa) || r.mujer === nombrePrimeraEsposa || r.hombre === nombrePrimeraEsposa);
-            if (ramaEsposa) {
-                const colorEsposaObj = obtenerObjetoColorPorIdOPersonalizado(ramaEsposa.colorId);
-                if (colorEsposaObj) {
-                    return {
-                        tipo: 'unico',
-                        color: colorEsposaObj,
-                        etiqueta: `Color ${colorEsposaObj.num} - ${colorEsposaObj.nombre}`,
-                        colorNombre: colorEsposaObj.texto
-                    };
-                }
+        const nombrePrimeraEsposa = persona.parejas[0];
+        const ramaEsposa =
+            listaRamas.find(r => r.hombre === nombreCompleto && r.mujer === nombrePrimeraEsposa) ||
+            listaRamas.find(r => r.hombre === nombreCompleto) ||
+            listaRamas.find(r => r.mujer === nombrePrimeraEsposa || r.hombre === nombrePrimeraEsposa);
+        if (ramaEsposa) {
+            const colorEsposaObj = obtenerObjetoColorPorIdOPersonalizado(ramaEsposa.colorId);
+            if (colorEsposaObj) {
+                return {
+                    tipo: 'unico',
+                    color: colorEsposaObj,
+                    etiqueta: `Color ${colorEsposaObj.num} - ${colorEsposaObj.nombre}`,
+                    colorNombre: colorEsposaObj.texto
+                };
             }
-
+        }
             const parejaObj = listaPersonas.find(p => `${p.nombre} ${p.apellido || ''}`.trim() === nombrePrimeraEsposa);
             if (parejaObj) {
                 const estiloPareja = obtenerEstiloPersona(parejaObj, contexto);
