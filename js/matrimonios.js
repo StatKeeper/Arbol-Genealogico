@@ -60,6 +60,13 @@ function obtenerNombreCompletoPersona(persona) {
     return `${nombre} ${apellido}`.trim();
 }
 
+function normalizarSexoPersona(persona) {
+    const sexo = String(persona?.sexo || persona?.genero || persona?.género || "").trim().toUpperCase();
+    if (sexo === "M" || sexo === "MASCULINO" || sexo === "HOMBRE") return "M";
+    if (sexo === "F" || sexo === "FEMENINO" || sexo === "MUJER") return "F";
+    return "";
+}
+
 function poblarSelectoresMatrimonios() {
     const sel1 = document.getElementById("sel-pareja-1");
     const sel2 = document.getElementById("sel-pareja-2");
@@ -69,25 +76,35 @@ function poblarSelectoresMatrimonios() {
         ? window.listaPersonas
         : (typeof listaPersonas !== "undefined" && Array.isArray(listaPersonas) ? listaPersonas : []);
 
-    const nombresUnicos = Array.from(
+    const hombres = Array.from(
         new Set(
             origen
+                .filter(p => normalizarSexoPersona(p) === "M")
                 .map(p => obtenerNombreCompletoPersona(p))
                 .filter(Boolean)
         )
     ).sort((a, b) => a.localeCompare(b, "es"));
 
-    const opcionVacia = '<option value="">-- Seleccione una persona --</option>';
-    const opciones = nombresUnicos.map(nombre => `<option value="${nombre}">${nombre}</option>`).join("");
+    const mujeres = Array.from(
+        new Set(
+            origen
+                .filter(p => normalizarSexoPersona(p) === "F")
+                .map(p => obtenerNombreCompletoPersona(p))
+                .filter(Boolean)
+        )
+    ).sort((a, b) => a.localeCompare(b, "es"));
+
+    const opcionVacia1 = '<option value="">-- Seleccione persona masculina --</option>';
+    const opcionVacia2 = '<option value="">-- Seleccione persona femenina --</option>';
 
     const prev1 = sel1.value;
     const prev2 = sel2.value;
 
-    sel1.innerHTML = opcionVacia + opciones;
-    sel2.innerHTML = opcionVacia + opciones;
+    sel1.innerHTML = opcionVacia1 + hombres.map(nombre => `<option value="${nombre}">${nombre}</option>`).join("");
+    sel2.innerHTML = opcionVacia2 + mujeres.map(nombre => `<option value="${nombre}">${nombre}</option>`).join("");
 
-    if (nombresUnicos.includes(prev1)) sel1.value = prev1;
-    if (nombresUnicos.includes(prev2)) sel2.value = prev2;
+    if (hombres.includes(prev1)) sel1.value = prev1;
+    if (mujeres.includes(prev2)) sel2.value = prev2;
 }
 
 function registrarParejaDesdeUI() {
