@@ -1237,19 +1237,26 @@ function poblarSelectoresParejasHijosAdmin(parejasSeleccionadas = [], hijosSelec
     contParejas.innerHTML = "";
     contHijos.innerHTML = "";
 
-    listaPersonas.forEach(p => {
-        const nom = `${p.nombre} ${p.apellido || ''}`.trim();
-        const esPareja = parejasSeleccionadas.includes(nom);
-        const esHijo = hijosSeleccionados.includes(nom);
+    const personasOrdenadas = [...listaPersonas]
+        .map(p => ({
+            nom: `${p.nombre} ${p.apellido || ''}`.trim(),
+            gen: p.generacion
+        }))
+        .sort((a, b) => a.nom.localeCompare(b.nom, "es"));
+
+    personasOrdenadas.forEach(p => {
+        const esPareja = parejasSeleccionadas.includes(p.nom);
+        const esHijo = hijosSeleccionados.includes(p.nom);
 
         contParejas.innerHTML += `
             <label class="checkbox-item-label">
-                <input type="checkbox" name="check-pareja" value="${nom}" ${esPareja ? 'checked' : ''}> ${nom} (${p.generacion})
+                <input type="checkbox" name="check-pareja" value="${p.nom}" ${esPareja ? 'checked' : ''}> ${p.nom} (${p.gen})
             </label>
         `;
+
         contHijos.innerHTML += `
             <label class="checkbox-item-label">
-                <input type="checkbox" name="check-hijo" value="${nom}" ${esHijo ? 'checked' : ''}> ${nom} (${p.generacion})
+                <input type="checkbox" name="check-hijo" value="${p.nom}" ${esHijo ? 'checked' : ''}> ${p.nom} (${p.gen})
             </label>
         `;
     });
