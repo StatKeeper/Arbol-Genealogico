@@ -22,9 +22,12 @@
             <button id="tab-matrimonios" class="tab-btn" onclick="cambiarPestana('matrimonios')">💍 Matrimonios</button>
         </nav>
 
-        <div class="acciones-header">
-            <button id="btn-exportar" class="btn-exportar" onclick="exportarJSON()">⬇ Exportar JSON</button>
-        </div>
+       <div class="acciones-header">
+                <button id="btn-exportar" class="btn-exportar" onclick="exportarJSON()">⬇ Exportar JSON</button>
+                <button id="btn-importar" type="button" class="btn-exportar" onclick="document.getElementById('input-importar-json').click()">⬆ Importar JSON</button>
+                <button id="btn-limpiar-todo" type="button" class="btn-exportar" onclick="limpiarTodosLosDatos()">🗑 Limpiar Todo</button>
+                <input type="file" id="input-importar-json" accept=".json" style="display: none;" onchange="importarJSON(event)">
+            </div>
     </header>
 
     <!-- PESTAÑA 1: VISUALIZADOR DEL ÁRBOL -->
