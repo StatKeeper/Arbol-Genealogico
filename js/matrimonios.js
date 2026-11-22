@@ -142,6 +142,35 @@ function registrarParejaDesdeUI() {
     if (sel2) sel2.value = "";
 
     renderizarPestanaMatrimonios();
+    if (typeof renderizarTodo === "function") {
+        renderizarTodo();
+    }
+}
+
+function eliminarMatrimonio(indice) {
+    if (indice < 0 || indice >= MATRIMONIOS_CONFIRMADOS.length) return;
+    const [p1, p2] = MATRIMONIOS_CONFIRMADOS[indice];
+    if (!confirm(`¿Desea eliminar el matrimonio confirmado entre ${p1} y ${p2}?`)) return;
+
+    MATRIMONIOS_CONFIRMADOS.splice(indice, 1);
+    guardarListaLocal(STORAGE_MATRIMONIOS_KEY, MATRIMONIOS_CONFIRMADOS);
+    renderizarPestanaMatrimonios();
+    if (typeof renderizarTodo === "function") {
+        renderizarTodo();
+    }
+}
+
+function eliminarParejaDescendencia(indice) {
+    if (indice < 0 || indice >= PAREJAS_DESCENDENCIA.length) return;
+    const [p1, p2] = PAREJAS_DESCENDENCIA[indice];
+    if (!confirm(`¿Desea eliminar la pareja por descendencia entre ${p1} y ${p2}?`)) return;
+
+    PAREJAS_DESCENDENCIA.splice(indice, 1);
+    guardarListaLocal(STORAGE_DESCENDENCIA_KEY, PAREJAS_DESCENDENCIA);
+    renderizarPestanaMatrimonios();
+    if (typeof renderizarTodo === "function") {
+        renderizarTodo();
+    }
 }
 
 function renderizarPestanaMatrimonios() {
@@ -150,12 +179,18 @@ function renderizarPestanaMatrimonios() {
     const contMatrimonios = document.getElementById("lista-matrimonios-vista");
     const contDescendencia = document.getElementById("lista-parejas-descendencia-vista");
 
+    const estiloFila = 'display:flex; justify-content:space-between; align-items:center; gap:10px;';
+    const estiloBtnBorrar = 'background:#dc2626; color:#fff; border:none; border-radius:4px; padding:4px 8px; cursor:pointer; font-size:0.8rem;';
+
     if (contMatrimonios) {
         if (!MATRIMONIOS_CONFIRMADOS.length) {
             contMatrimonios.innerHTML = '<p style="color:#666;">No hay matrimonios confirmados registrados.</p>';
         } else {
-            contMatrimonios.innerHTML = MATRIMONIOS_CONFIRMADOS.map(([p1, p2]) =>
-                `<div class="rama-item"><span style="color:#d4af37;">💍</span> <strong>${p1}</strong> &amp; <strong>${p2}</strong></div>`
+            contMatrimonios.innerHTML = MATRIMONIOS_CONFIRMADOS.map(([p1, p2], idx) =>
+                `<div class="rama-item" style="${estiloFila}">
+                    <span><span style="color:#d4af37;">💍</span> <strong>${p1}</strong> &amp; <strong>${p2}</strong></span>
+                    <button type="button" style="${estiloBtnBorrar}" onclick="eliminarMatrimonio(${idx})">Borrar</button>
+                </div>`
             ).join("");
         }
     }
@@ -164,8 +199,11 @@ function renderizarPestanaMatrimonios() {
         if (!PAREJAS_DESCENDENCIA.length) {
             contDescendencia.innerHTML = '<p style="color:#666;">No hay parejas por descendencia registradas.</p>';
         } else {
-            contDescendencia.innerHTML = PAREJAS_DESCENDENCIA.map(([p1, p2]) =>
-                `<div class="rama-item">❤ <strong>${p1}</strong> &amp; <strong>${p2}</strong></div>`
+            contDescendencia.innerHTML = PAREJAS_DESCENDENCIA.map(([p1, p2], idx) =>
+                `<div class="rama-item" style="${estiloFila}">
+                    <span>❤ <strong>${p1}</strong> &amp; <strong>${p2}</strong></span>
+                    <button type="button" style="${estiloBtnBorrar}" onclick="eliminarParejaDescendencia(${idx})">Borrar</button>
+                </div>`
             ).join("");
         }
     }
