@@ -1362,3 +1362,57 @@ function exportarJSON() {
     downloadAnchor.click();
     downloadAnchor.remove();
 }
+function importarJSON(event) {
+    const file = event.target.files && event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function (e) {
+        try {
+            const parsed = JSON.parse(e.target.result);
+            if (!parsed || !Array.isArray(parsed.personas) || !Array.isArray(parsed.ramas)) {
+                alert("El archivo JSON no tiene el formato esperado ({ personas, ramas }).");
+                return;
+            }
+
+            listaPersonas = parsed.personas;
+            listaRamas = parsed.ramas;
+
+            if (typeof guardarEnMemoriaLocal === "function") {
+                guardarEnMemoriaLocal();
+            } else {
+                localStorage.setItem("familia_datos_privados", JSON.stringify({ personas: listaPersonas, ramas: listaRamas }));
+            }
+
+            if (typeof refrescarTodo === "function") {
+                refrescarTodo();
+            }
+
+            alert(`Archivo "${file.name}" cargado correctamente.`);
+        } catch (err) {
+            console.error("Error al importar JSON:", err);
+            alert("No se pudo leer el archivo JSON. Verifique que sea válido.");
+        } finally {
+            event.target.value = "";
+        }
+    };
+    reader.readAsText(file, "utf-8");
+}
+
+function limpiarTodosLosDatos() {
+    const confirmar = confirm("¿Seguro que desea borrar todos los datos actuales de la pantalla y la memoria local para empezar uno nuevo? (Asegúrese de haber exportado su JSON antes si desea conservarlo).");
+    if (!confirmar) return;
+
+    listaPersonas = [];
+    listaRamas = [];
+
+    if (typeof guardarEnMemoriaLocal === "function") {
+        guardarEnMemoriaLocal();
+    } else {
+        localStorage.setItem("familia_datos_privados", JSON.stringify({ personas: [], ramas: [] }));
+    }
+
+    if (typeof refrescarTodo === "function") {
+        refrescarTodo();
+    }
+}
