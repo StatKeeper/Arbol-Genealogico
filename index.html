@@ -19,7 +19,7 @@
             <button id="tab-columnas" class="tab-btn" onclick="cambiarPestana('columnas')">Vista en Columnas</button>
             <button id="tab-ramas" class="tab-btn" onclick="cambiarPestana('ramas')">🎨 Gestión de Ramas</button>
             <button id="tab-admin" class="tab-btn" onclick="cambiarPestana('admin')">Administrar / Agregar</button>
-        <button id="tab-matrimonios" class="tab-btn" onclick="cambiarPestana('matrimonios')">💍 Matrimonios</button>
+            <button id="tab-matrimonios" class="tab-btn" onclick="cambiarPestana('matrimonios')">💍 Matrimonios</button>
         </nav>
 
         <div class="acciones-header">
@@ -182,9 +182,39 @@
             </div>
         </div>
     </section>
-<!-- PESTAÑA 5: MATRIMONIOS Y PAREJAS -->
+
+    <!-- PESTAÑA 5: MATRIMONIOS Y PAREJAS -->
     <section id="vista-matrimonios" class="vista-oculta">
         <div class="ramas-container">
+            <!-- Formulario para registrar directamente desde la web -->
+            <div class="ramas-panel-card" style="grid-column: 1 / -1;">
+                <h2>Registrar Nuevo Matrimonio o Unión</h2>
+                <p style="font-size: 0.9rem; color: #555; margin-bottom: 14px;">
+                    Selecciona a las dos personas registradas en el árbol e indica el tipo de unión para agregarlas directamente.
+                </p>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="sel-pareja-1">1. Primera Persona:</label>
+                        <select id="sel-pareja-1"></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="sel-pareja-2">2. Segunda Persona:</label>
+                        <select id="sel-pareja-2"></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="sel-tipo-union">3. Tipo de Unión:</label>
+                        <select id="sel-tipo-union">
+                            <option value="matrimonio">Matrimonio Confirmado (💍)</option>
+                            <option value="descendencia">Pareja / Descendencia (❤)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="button" class="btn-guardar" onclick="registrarParejaDesdeUI()" style="margin-top: 8px;">Registrar Unión</button>
+            </div>
+
+            <!-- Listados actuales -->
             <div class="ramas-panel-card">
                 <h2>Matrimonios Confirmados (💍)</h2>
                 <p style="font-size: 0.9rem; color: #555; margin-bottom: 12px;">
@@ -202,6 +232,7 @@
             </div>
         </div>
     </section>
+
     <script src="js/matrimonios.js"></script>
     <script src="js/arbol.js"></script>
 </body>
