@@ -383,118 +383,127 @@ function obtenerCodigoISO(pais) {
     };
     return codigos[limpio] || null;
 }
-function obtenerInfoBanderasYTexto(persona) {
-    const paisesSet = new Set();
-    const textosPaises = [];
+function obtenerInfoBanderasYTexto(persona, visitados = new Set()) {
+  if (!persona) {
+    return { htmlBanderas: '', textoTag: '', paisesPadreLista: [], paisesMadreLista: [] };
+  }
 
-    // 1. Si la persona tiene nacionalidad propia explícita
-    const paisPropio = (persona.nacionalidad || '').trim();
-    if (paisPropio !== '') {
-        paisPropio.split('/').forEach(p => {
-            const limpio = p.trim();
-            if (limpio) {
-                paisesSet.add(limpio);
-                textosPaises.push(limpio);
-            }
-        });
+  const nombreCompleto = `${persona.nombre || ''} ${persona.apellido || ''}`.trim();
+  const claveVisita = persona.id || nombreCompleto;
+  if (visitados.has(claveVisita)) {
+    return { htmlBanderas: '', textoTag: '', paisesPadreLista: [], paisesMadreLista: [] };
+  }
+
+  const nuevosVisitados = new Set(visitados);
+  nuevosVisitados.add(claveVisita);
+
+  const paisesSet = new Set();
+  const textosPaises = [];
+  const agregarTexto = (pais) => {
+    const limpio = (pais || '').trim();
+    if (limpio && !paisesSet.has(limpio)) {
+      paisesSet.add(limpio);
+      textosPaises.push(limpio);
     }
+  };
 
-    // 2. Buscar padres biológicos de forma directa
-    const nombreCompleto = `${persona.nombre} ${persona.apellido || ''}`.trim();
-    let padre = null;
-    let madre = null;
+  // 1. Nacionalidad propia explícita
+  const paisPropio = (persona.nacionalidad || '').trim();
+  if (paisPropio !== '') {
+    paisPropio.split('/').forEach(agregarTexto);
+  }
 
-    if (typeof listaPersonas !== 'undefined') {
-        padre = listaPersonas.find(p => p.sexo === 'M' && p.hijos && p.hijos.includes(nombreCompleto));
-        madre = listaPersonas.find(p => p.sexo === 'F' && p.hijos && p.hijos.includes(nombreCompleto));
+  // 2. Buscar padres biológicos directos
+  let padre = null;
+  let madre = null;
+  if (typeof listaPersonas !== 'undefined' && nombreCompleto) {
+    padre = listaPersonas.find(p => p.sexo === 'M' && Array.isArray(p.hijos) && p.hijos.includes(nombreCompleto)) || null;
+    madre = listaPersonas.find(p => p.sexo === 'F' && Array.isArray(p.hijos) && p.hijos.includes(nombreCompleto)) || null;
+  }
 
-        // Acumular nacionalidad del padre si la tiene
-        if (padre && (padre.nacionalidad || '').trim() !== '') {
-            padre.nacionalidad.split('/').forEach(p => {
-                const limpio = p.trim();
-                if (limpio && !paisesSet.has(limpio)) {
-                    paisesSet.add(limpio);
-                    textosPaises.push(limpio);
-                }
-            });
+  // Acumular países de toda la línea paterna y materna (propios + heredados)
+  const paisesPadre = new Set();
+  const paisesMadre = new Set();
+
+  if (padre) {
+    if (padre.nacionalidad) {
+      padre.nacionalidad.split('/').forEach(p => {
+        const limpio = p.trim();
+        if (limpio) {
+          paisesPadre.add(limpio);
+          agregarTexto(limpio);
         }
+      });
+    }
+    const infoPadre = obtenerInfoBanderasYTexto(padre, nuevosVisitados);
+    (infoPadre.paisesPadreLista || []).forEach(p => { paisesPadre.add(p); agregarTexto(p); });
+    (infoPadre.paisesMadreLista || []).forEach(p => { paisesPadre.add(p); agregarTexto(p); });
+  }
 
-        // Acumular nacionalidad de la madre si la tiene
-        if (madre && (madre.nacionalidad || '').trim() !== '') {
-            madre.nacionalidad.split('/').forEach(p => {
-                const limpio = p.trim();
-                if (limpio && !paisesSet.has(limpio)) {
-                    paisesSet.add(limpio);
-                    textosPaises.push(limpio);
-                }
-            });
+  if (madre) {
+    if (madre.nacionalidad) {
+      madre.nacionalidad.split('/').forEach(p => {
+        const limpio = p.trim();
+        if (limpio) {
+          paisesMadre.add(limpio);
+          agregarTexto(limpio);
         }
+      });
     }
+    const infoMadre = obtenerInfoBanderasYTexto(madre, nuevosVisitados);
+    (infoMadre.paisesPadreLista || []).forEach(p => { paisesMadre.add(p); agregarTexto(p); });
+    (infoMadre.paisesMadreLista || []).forEach(p => { paisesMadre.add(p); agregarTexto(p); });
+  }
 
-    if (paisesSet.size === 0) {
-        return { htmlBanderas: '', textoTag: '' };
+  if (paisesSet.size === 0) {
+    return { htmlBanderas: '', textoTag: '', paisesPadreLista: [], paisesMadreLista: [] };
+  }
+
+  // 3. Construir HTML de banderas del padre y de la madre
+  let htmlPadre = '';
+  let renderizoPadre = false;
+  paisesPadre.forEach(pais => {
+    const iso = obtenerCodigoISO(pais);
+    if (iso) {
+      htmlPadre += `<img src="https://flagcdn.com/w40/${iso}.png" alt="${pais}" title="Padre: ${pais}" class="bandera-doble-item">`;
+      renderizoPadre = true;
     }
+  });
 
-    // 3. Generar las banderas visuales acumuladas verticalmente con separador
-    let htmlBanderas = '<div class="banderas-contenedor-der">';
-    let renderizoPadre = false;
-    let renderizoMadre = false;
-
-    // Banderas aportadas por el Padre
-    const paisesPadre = new Set();
-    if (padre && padre.nacionalidad) {
-        padre.nacionalidad.split('/').forEach(p => {
-            const limpio = p.trim();
-            if (limpio) paisesPadre.add(limpio);
-        });
+  let htmlMadre = '';
+  let renderizoMadre = false;
+  paisesMadre.forEach(pais => {
+    const iso = obtenerCodigoISO(pais);
+    if (iso) {
+      htmlMadre += `<img src="https://flagcdn.com/w40/${iso}.png" alt="${pais}" title="Madre: ${pais}" class="bandera-doble-item">`;
+      renderizoMadre = true;
     }
+  });
 
-    // Banderas aportadas por la Madre
-    const paisesMadre = new Set();
-    if (madre && madre.nacionalidad) {
-        madre.nacionalidad.split('/').forEach(p => {
-            const limpio = p.trim();
-            if (limpio) paisesMadre.add(limpio);
-        });
+  let htmlBanderas = '<div class="banderas-contenedor-der">';
+  if (renderizoPadre || renderizoMadre) {
+    htmlBanderas += htmlPadre;
+    if (renderizoPadre && renderizoMadre) {
+      htmlBanderas += '<div class="separador-banderas" style="width: 24px; height: 2px; background: #cbd5e1; margin: 3px auto; border-radius: 1px;"></div>';
     }
-
-    // Renderizar primero las del padre
-    paisesPadre.forEach(pais => {
-        const iso = obtenerCodigoISO(pais);
-        if (iso) {
-            htmlBanderas += `<img src="https://flagcdn.com/w40/${iso}.png" alt="${pais}" title="Padre: ${pais}" class="bandera-doble-item">`;
-            renderizoPadre = true;
-        }
+    htmlBanderas += htmlMadre;
+  } else {
+    paisesSet.forEach(pais => {
+      const iso = obtenerCodigoISO(pais);
+      if (iso) {
+        htmlBanderas += `<img src="https://flagcdn.com/w40/${iso}.png" alt="${pais}" title="${pais}" class="bandera-doble-item">`;
+      }
     });
+  }
+  htmlBanderas += '</div>';
 
-    // Línea divisoria si ambos padres tienen banderas
-    if (renderizoPadre && paisesMadre.size > 0) {
-        htmlBanderas += '<div class="separador-banderas" style="width: 24px; height: 2px; background: #cbd5e1; margin: 3px auto; border-radius: 1px;"></div>';
-    }
-
-    // Renderizar después las de la madre
-    paisesMadre.forEach(pais => {
-        const iso = obtenerCodigoISO(pais);
-        if (iso) {
-            htmlBanderas += `<img src="https://flagcdn.com/w40/${iso}.png" alt="${pais}" title="Madre: ${pais}" class="bandera-doble-item">`;
-            renderizoMadre = true;
-        }
-    });
-
-    // Si no hubo padres pero sí nacionalidad propia
-    if (!renderizoPadre && !renderizoMadre) {
-        paisesSet.forEach(pais => {
-            const iso = obtenerCodigoISO(pais);
-            if (iso) {
-                htmlBanderas += `<img src="https://flagcdn.com/w40/${iso}.png" alt="${pais}" title="${pais}" class="bandera-doble-item">`;
-            }
-        });
-    }
-
-    htmlBanderas += '</div>';
-
-    const textoTag = textosPaises.join(' / ');
-    return { htmlBanderas, textoTag };
+  const textoTag = textosPaises.join(' / ');
+  return {
+    htmlBanderas,
+    textoTag,
+    paisesPadreLista: Array.from(paisesPadre),
+    paisesMadreLista: Array.from(paisesMadre)
+  };
 }
 function obtenerObjetoColorPorIdOPersonalizado(colorId) {
     if (colorId && colorId.startsWith('#')) {
